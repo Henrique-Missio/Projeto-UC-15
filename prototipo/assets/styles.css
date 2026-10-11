@@ -114,6 +114,9 @@ h2,
 h3 {
   line-height: var(--entrelinha-titulo);
   margin-block: 0 var(--espaco-1);
+  /* T03: palavra longa num título quebra em vez de empurrar a página para fora da tela.
+     "anywhere" também reduz a largura mínima do conteúdo, o que ajuda itens de grade e de flex. */
+  overflow-wrap: anywhere;
 }
 
 /* clamp(mínimo, preferido, máximo): título fluido com piso e teto.
@@ -329,6 +332,24 @@ p {
   /* currentColor: a borda usa a cor do texto */
 }
 
+/* T03: duas fichas de jogo lado a lado. GRID de auto-fit:
+   - repeat(auto-fit, ...): o navegador decide quantas colunas cabem.
+   - minmax(min(100%, 16rem), 1fr): cada ficha tem no mínimo 16rem e, em tela menor, 100%.
+   Em 320px: uma ficha por linha. Na coluna do desktop: duas lado a lado, sem media query. */
+.fichas {
+  display: grid;
+  gap: var(--espaco-2);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 16rem), 1fr));
+  margin-block-end: var(--espaco-2);
+}
+
+/* O espaço entre as fichas vem do gap. A margem do .slot, só aqui dentro, é zerada.
+   min-inline-size: 0 deixa o slot encolher mesmo com nome de time longo. */
+.fichas .slot {
+  margin-block-end: 0;
+  min-inline-size: 0;
+}
+
 /* FICHA DE JOGO: um componente, dois contextos.
    container: ficha / inline-size transforma o .slot em contêiner de consulta, com o nome "ficha".
    A ficha olha para a largura do SLOT, não da janela.
@@ -343,6 +364,12 @@ p {
   gap: var(--espaco-1);
   padding: var(--espaco-2);
   border: var(--borda);
+  /* T03: nome de time ou local muito longo quebra dentro da ficha.
+     min-inline-size: 0 deixa a ficha encolher até a largura do slot.
+     overflow-wrap é herdado: vale para os filhos (.ficha__times, .ficha__meta).
+     A largura da ficha vem do slot (grade .fichas ou lateral), sem limite próprio. */
+  min-inline-size: 0;
+  overflow-wrap: anywhere;
 }
 
 .ficha h3 {
@@ -356,17 +383,43 @@ p {
   font-weight: 700;
 }
 
+/* T03: meta da ficha (selo, data e local).
+   Sem grid: o texto "04/10/2026, Estádio Municipal" continua em fluxo normal.
+   Assim a vírgula fica colada na data e, se faltar espaço, só quebra depois dela. */
 .ficha__meta {
   margin: 0;
 }
 
-/* Quando o slot tem 30rem ou mais, os times ficam lado a lado.
-   Na lateral (18rem) a ficha continua empilhada, na mesma janela. */
-@container ficha (min-width: 30rem) {
+/* O selo ocupa uma linha só dele (display: block), mas com a largura do próprio texto.
+   fit-content = largura do conteúdo, sem esticar até a borda da ficha.
+   O seletor com .ficha__meta limita a regra à ficha: o selo dos cartões de notícia não muda. */
+.ficha__meta .selo {
+  display: block;
+  inline-size: fit-content;
+  margin-block-end: .25rem;
+}
+
+/* Quando o slot tem 22rem ou mais, os times ficam lado a lado.
+   22rem: cabem "Time da Casa", o placar e "Vale FC" numa linha, com o padding da ficha.
+   Na lateral (18rem) e no celular a ficha continua empilhada, na mesma janela. */
+@container ficha (min-width: 22rem) {
   .ficha__times {
-    grid-template-columns: 1fr auto 1fr;
+    /* minmax(0, auto): cada coluna ocupa só o tamanho do próprio texto e pode encolher até 0
+       se o nome for longo. Nada de dividir o espaço em partes iguais. */
+    grid-template-columns: minmax(0, auto) auto minmax(0, auto);
+    /* start: junta o grupo no início, em vez de espalhar pela largura toda. */
+    justify-content: start;
+    column-gap: var(--espaco-3);
     align-items: center;
-    text-align: center;
+  }
+
+  /* Slot largo: o selo volta a ficar na mesma linha da data e do local.
+     A base (slot estreito) deixa o selo em linha própria. Aqui desfazemos isso.
+     inline-size: auto cancela o fit-content da base. */
+  .ficha__meta .selo {
+    display: inline-block;
+    inline-size: auto;
+    margin-block-end: 0;
   }
 }
 

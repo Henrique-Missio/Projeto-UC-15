@@ -74,17 +74,32 @@
 
           <!-- .slot: contêiner da container query. A ficha dentro dele muda de arranjo
                conforme a largura do slot, não da janela. -->
-          <div class="slot">
-            <!-- article: conteúdo que faz sentido sozinho (um jogo). -->
-            <article class="ficha">
-              <h3>Último resultado</h3>
-              <p class="ficha__times"><span>Time da Casa</span> <span>2 x 0</span> <span>Vale FC</span></p>
-              <!-- A palavra "Vitória" em texto: o resultado nunca depende só de cor.
-                   time/datetime: a data em formato que máquina entende. -->
-              <p class="ficha__meta"><span class="selo">Vitória</span> <time datetime="2026-10-04">04/10/2026</time>,
-                Estádio Municipal</p>
-            </article>
-          </div>
+              <!-- .fichas: agrupa duas fichas de jogo lado a lado (Grid definido no CSS).
+                             Cada ficha continua dentro do próprio .slot, que é o contêiner da container query.
+                             Em tela estreita as fichas empilham, uma por linha. -->
+              <div class="fichas">
+              
+                <!-- .slot 1: último resultado -->
+                <div class="slot">
+                  <article class="ficha">
+                    <h3>Último resultado</h3>
+                    <p class="ficha__times"><span>Time da Casa</span> <span>2 x 0</span> <span>Vale FC</span></p>
+                    <!-- "Vitória" em texto: o resultado nunca depende só de cor.
+                                   time/datetime: a data em formato que máquina entende. -->
+                    <p class="ficha__meta"><span class="selo">Vitória</span> <time datetime="2026-10-04">04/10/2026</time>,
+                      Estádio Municipal</p>
+                  </article>
+                </div>
+                <!-- .slot 2: jogo anterior (mesmos dados da linha de 27/09 do calendário).
+                               "Empate" em texto, não só cor. -->
+                <div class="slot">
+                  <article class="ficha">
+                    <h3>Jogo anterior</h3>
+                    <p class="ficha__times"><span>Cidade Alta</span> <span>1 x 1</span> <span>Time da Casa</span></p>
+                    <p class="ficha__meta"><span class="selo">Empate</span> <time datetime="2026-09-27">27/09/2026</time>,
+                      Arena Cidade Alta</p>
+                  </article>
+                </div>    </div>
           <!-- Melhoria progressiva: a lista está completa sem JS. O filtro da T07 só esconde itens. -->
           <div class="grade-noticias">
             <!-- Um article por notícia. Cada um tem o seu h3. -->

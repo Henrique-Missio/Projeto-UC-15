@@ -52,8 +52,10 @@ Aqui eu registro o porquê. O que foi feito, com classes, larguras e medidas, es
 - Notícias: 'repeat(auto-fit, minmax(min(100%, 14rem), 1fr))'. Não precisa de breakpoint.
 - Tabelas: rolagem horizontal só dentro do 'div' que as envolve. Esse 'div' recebe foco por teclado e tem nome.
 - Breakpoint em 56rem. Motivo: a barra lateral de 18rem só entra quando a coluna principal ainda comporta dois cartões de 14rem. Efeito colateral: entre 896px e cerca de 1064px os cartões passam de 3 para 2 colunas.
-- A ficha de jogo usa container query ('container: ficha / inline-size', 'min-width: 30rem'). Mesma janela, dois arranjos: empilhada na lateral, lado a lado na coluna.
+- A ficha de jogo usa container query ('container: ficha / inline-size', 'min-width: 22rem'). Duas fichas lado a lado na coluna (.fichas, Grid auto-fit). Mesma janela, dois arranjos: empilhada na lateral, lado a lado na coluna.
 - Origem: 'COMPATIBILIDADE.md', seção "Larguras testadas".
+- Testes T03 (320px): sem rolagem horizontal da página (`scrollWidth <= clientWidth`) com palavra longa em título e na ficha, lista vazia e 20 cards. Tab segue a ordem visual. Evidência: `docs/evidencias/t03-320px-sem-overflow.png`, `t03-texto-longo.png` e `t03-20-itens.png`.
+- Palavras longas: `overflow-wrap: anywhere` e `min-inline-size: 0` nos títulos, nos cards e na ficha. Na ficha, as colunas usam `minmax(0, 1fr)`.
 
 ## D-07: Movimento (T04)
 
