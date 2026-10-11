@@ -26,16 +26,16 @@ Aqui eu registro o porquê. O que foi feito, com classes, larguras e medidas, es
 
 ## D-04: Tokens e unidades (T02)
 
-- Tokens em ':root', nomeados pelo papel: '--cor-marca', '--cor-superficie-escura', '--cor-foco', '--cor-erro', '--espaco-1' a '--espaco-4', '--duracao'.
+- Tokens em `:root`, nomeados pelo papel: `--cor-marca`, `--cor-superficie-escura`, `--cor-foco`, `--cor-foco-invertido`, `--cor-erro`, `--cor-desabilitado-*`, `--espaco-1` a `--espaco-4`, `--texto-*`, `--entrelinha-*`, `--espessura-*`, `--duracao`.
 - Unidades:
   - 'rem' para a escala de espaço e de texto;
   - 'em' no padding dos botões e das células, que acompanha a fonte do próprio componente;
-  - 'px' só na borda de 1px;
+    - `px` só no `:root`: borda de 1px (`--borda`) e os tokens `--espessura-borda` (2px) e `--espessura-foco` (3px). Exceção justificada: a WCAG 2.2 pede foco visível e espesso, e isso não é tamanho de texto. O `outline-offset` e o `translateY` ficaram em `rem`;
   - 'ch' no limite de 65 caracteres dos parágrafos;
   - 'clamp(2rem, 1.5rem + 2vw, 3.5rem)' no 'h1', com piso de 2rem como fallback.
 - O que eu converti: 10px e 15px viraram 1rem, 20px virou 1rem na horizontal e 1.5rem na vertical, 40px virou 2.5rem, 800px virou 70rem.
 - Zero ID e zero '!important' no CSS próprio.
-- Contraste: ver "Contraste conferido" no 'COMPATIBILIDADE.md'.
+- Contraste AA, par a par (calculado): texto/fundo 16,48:1. Branco/marca 5,15:1. Branco/superfície escura 12,63:1. Foco/fundo 6,39:1. Borda do controle/fundo 4,54:1. Erro/fundo 6,54:1. Todos acima de 4,5:1 (texto) e 3:1 (componente). Detalhes em "Contraste conferido" no `COMPATIBILIDADE.md`.
 - Origem das medidas: 'COMPATIBILIDADE.md', seções "CSS próprio e peso" e "Contraste conferido".
 
 ## D-05: Estados da interface (T02)
@@ -43,8 +43,8 @@ Aqui eu registro o porquê. O que foi feito, com classes, larguras e medidas, es
 - Normal, hover, foco, ativo e desabilitado estão no '.btn' e no '.nav__link'.
 - Inválido está no '.campo__controle:user-invalid', com borda, fundo e a mensagem "Erro:" em texto. Não depende só de cor.
 - O foco nunca é removido. Fica azul no fundo claro e branco nos fundos escuros (a variável '--cor-foco' muda dentro de '.cabecalho', '.destaque' e '.rodape').
-- Pendência: tirar um print de cada estado e guardar em 'docs/evidencias/'.
-- Pendência: registrar, com print do DevTools, uma declaração aplicada e uma riscada. Sugestão: na F2, o '.m-0' do rodapé vence o 'margin-bottom' do reboot para 'p'.
+- Evidência dos 6 estados em `docs/evidencias/`: `t02-estado-normal.png`, `t02-estado-hover.png`, `t02-estado-ativo.png`, `t02-estado-foco.png`, `t02-estado-desabilitado.png` e `t02-estado-invalido.png`.
+- Declaração riscada (DevTools, `:hover` forçado): em `.btn`, o `background-color` (`styles.css:476`) é riscado porque `.btn:hover` (`styles.css:489`) tem especificidade maior (pseudo-classe soma ao seletor). Evidência: `docs/evidencias/t02-declaracao-riscada.png`.
 
 ## D-06: Menu, grade e breakpoint (T03 e T05)
 
@@ -93,10 +93,19 @@ Aqui eu registro o porquê. O que foi feito, com classes, larguras e medidas, es
 - A comparação não é justa por linhas de CSS. A F2 também escreve menos CSS porque a F1 tem container query e tokens que o Bootstrap não oferece.
 - Origem: 'COMPATIBILIDADE.md', seções "CSS próprio e peso" e "Diferenças para a F1".
 
+## D-12: Verificação de segredos antes do merge (T00 e T02)
+
+- Comando da spec: `git log -p | grep -i -E "senha|token|key"`. Gera falso positivo. Casa com "token" (tokens de CSS) e com `key` no source map do Bootstrap 5.3.8.
+- Comandos usados no lugar:
+  - `git grep -n -i -E "(senha|password|secret|api[_-]?key)[\"']? *[:=]"`
+  - `git log --all --name-only --pretty=format: | sort -u | grep -i -E "\.env|\.sql|\.zip|wp-config|\.pem"`
+- Resultado em 11/10/2026: nenhum segredo. O único achado do `git grep` foi `bootstrap.bundle.min.js.map` (nomes de código do Bootstrap). O segundo comando saiu vazio.
+- Os `.map` do Bootstrap ficam no repositório. São inofensivos e servem para depurar no DevTools.
+
 ## Pendências conhecidas
 
 - O formulário ainda não tem JavaScript. Ele não envia dados, e o botão de envio não mostra resultado. Entra no T07.
 - Firefox, WebKit, celular real e zoom de 200% ainda não foram testados.
 - Em 160px de largura a F1 tem rolagem horizontal. O critério é 320px.
-- Faltam os prints de evidência em 'docs/evidencias/'.
+- Faltam os prints de evidência das outras tarefas (T03 a T06) em `docs/evidencias/`. Os da T00 a T02 estão prontos.
 - O linter de HTML reclama de 'div role="region"' nas tabelas e do 'aria-hidden' do modal. Mantive os dois: seguem o padrão ensinado na A17 e na A14.
