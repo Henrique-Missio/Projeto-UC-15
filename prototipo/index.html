@@ -85,7 +85,7 @@
                 Estádio Municipal</p>
             </article>
           </div>
-
+          <!-- Melhoria progressiva: a lista está completa sem JS. O filtro da T07 só esconde itens. -->
           <div class="grade-noticias">
             <!-- Um article por notícia. Cada um tem o seu h3. -->
             <article class="card">
@@ -248,7 +248,7 @@
           <p id="contato-instrucao">Todos os campos são obrigatórios. Este formulário é uma demonstração e não envia
             dados.</p>
           <!-- form: agrupa os controles e permite envio com Enter. -->
-          <form action="#contato" method="post" aria-describedby="contato-instrucao">
+          <form aria-describedby="contato-instrucao">
             <div class="campo">
               <!-- label + for/id: o rótulo fica ligado ao campo. Clicar no texto foca o campo.
                    O rótulo é visível e fixo. Não uso placeholder no lugar dele. -->
@@ -256,26 +256,24 @@
               <!-- required: validação nativa do navegador.
                    autocomplete="name": o navegador sugere o nome.
                    aria-describedby: liga o campo à mensagem de erro logo abaixo. -->
-              <input class="campo__controle" id="nome" name="nome" type="text" autocomplete="name" required
-                aria-describedby="nome-erro">
+              <input class="campo__controle" id="nome" name="nome" type="text" autocomplete="name" required>
               <!-- A mensagem de erro existe no HTML, mas o CSS a esconde.
                    Ela aparece quando o campo fica inválido (:user-invalid).
                    "Erro:" em texto: o erro não depende só da cor vermelha. -->
-              <p class="erro" id="nome-erro"><strong>Erro:</strong> informe seu nome.</p>
+              <p class="erro" id="nome-erro" hidden><strong>Erro:</strong> informe seu nome.</p>
             </div>
             <div class="campo">
               <label class="campo__rotulo" for="email">E-mail</label>
               <!-- type="email": o navegador valida o formato e mostra o teclado certo no celular. -->
-              <input class="campo__controle" id="email" name="email" type="email" autocomplete="email" required
-                aria-describedby="email-erro">
-              <p class="erro" id="email-erro"><strong>Erro:</strong> informe um e-mail válido, como nome@exemplo.com.
+              <input class="campo__controle" id="email" name="email" type="email" autocomplete="email" required>
+              <p class="erro" id="email-erro" hidden><strong>Erro:</strong> informe um e-mail válido, como
+                nome@exemplo.com.
               </p>
             </div>
             <div class="campo">
               <label class="campo__rotulo" for="mensagem">Mensagem</label>
-              <textarea class="campo__controle" id="mensagem" name="mensagem" rows="4" required
-                aria-describedby="mensagem-erro"></textarea>
-              <p class="erro" id="mensagem-erro"><strong>Erro:</strong> escreva uma mensagem.</p>
+              <textarea class="campo__controle" id="mensagem" name="mensagem" rows="4" required></textarea>
+              <p class="erro" id="mensagem-erro" hidden><strong>Erro:</strong> escreva uma mensagem.</p>
             </div>
             <!-- button type="submit": botão nativo. Funciona com Tab, Enter e Espaço sem código extra. -->
             <button class="btn" type="submit">Enviar mensagem</button>
