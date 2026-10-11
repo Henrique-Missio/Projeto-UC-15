@@ -30,7 +30,7 @@ Torcedores que acompanham a temporada pelo celular.
 ```bash
 git clone <https://github.com/Henrique-Missio/Projeto-UC-15.git>
 cd <Projeto-UC-15>/prototipo
-python3 -m http.server 8000
+python -m http.server 8000
 ```
 
 Abra `http://localhost:8000` (F1) e `http://localhost:8000/bootstrap.html` (F2). No Windows, use `python` no lugar de `python3`. No VS Code, a extensão Live Server também serve.
