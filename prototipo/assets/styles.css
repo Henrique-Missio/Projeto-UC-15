@@ -24,6 +24,17 @@
   /* 5,72:1 sobre o fundo de erro */
   --cor-erro-fundo: #fdecea;
 
+  /* Foco sobre fundo escuro: branco dá 12,63:1 sobre #333 e 5,15:1 sobre a marca (mínimo de componente: 3:1).
+     Os blocos escuros (.cabecalho, .destaque, .rodape) redefinem --cor-foco com este valor. */
+  --cor-foco-invertido: #fff;
+
+  /* Estado desabilitado: isento da WCAG, mas mantido acima de 4,5:1.
+     Texto sobre o fundo do campo: 6,04:1. Texto sobre o fundo do botão: 5,31:1. */
+  --cor-desabilitado-texto: #595959;
+  --cor-desabilitado-fundo: #eee;
+  --cor-desabilitado-fundo-btn: #e0e0e0;
+  --cor-desabilitado-borda: #bdbdbd;
+
   /* Escala de espaço em rem. Todo espaçamento sai destes quatro valores. */
   --espaco-1: .5rem;
   --espaco-2: 1rem;
@@ -32,6 +43,24 @@
 
   --fonte: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   /* fonte do sistema: nenhum download */
+
+  /* Escala tipográfica em rem: acompanha a fonte escolhida pelo usuário no navegador.
+     O h1 fica de fora porque usa clamp() com piso e teto direto na regra. */
+  --texto-pequeno: .875rem;
+  /* legenda das tabelas */
+  --texto-h3: 1.25rem;
+  --texto-h2: 1.5rem;
+  --texto-marca: 1.75rem;
+  /* logotipo do cabeçalho */
+  --entrelinha-corpo: 1.5;
+  /* sem unidade: acompanha o tamanho de cada fonte */
+  --entrelinha-titulo: 1.2;
+
+  /* ÚNICA exceção ao "px só em borda de 1px": espessura de borda e do anel de foco.
+     A WCAG 2.2 pede foco visível e espesso. Isto não é tamanho de texto, então px é seguro aqui.
+     A borda de 1px do --borda (cartões e tabelas) já usa px na própria declaração. */
+  --espessura-borda: 2px;
+  --espessura-foco: 3px;
   --borda: 1px solid var(--cor-borda-suave);
   /* token que usa outro token */
 
@@ -67,8 +96,7 @@ body {
   min-block-size: 100vh;
   min-block-size: 100dvh;
   font-family: var(--fonte);
-  line-height: 1.5;
-  /* sem unidade: acompanha o tamanho de cada fonte */
+  line-height: var(--entrelinha-corpo);
   color: var(--cor-texto);
   background-color: var(--cor-fundo);
 }
@@ -84,7 +112,7 @@ img {
 h1,
 h2,
 h3 {
-  line-height: 1.2;
+  line-height: var(--entrelinha-titulo);
   margin-block: 0 var(--espaco-1);
 }
 
@@ -102,11 +130,11 @@ h1 {
 /* rem: tamanho relativo à fonte da raiz. Se o usuário aumentar a fonte do navegador, o texto acompanha.
    px não faz isso. */
 h2 {
-  font-size: 1.5rem;
+  font-size: var(--texto-h2);
 }
 
 h3 {
-  font-size: 1.25rem;
+  font-size: var(--texto-h3);
 }
 
 /* 65ch: no máximo uns 65 caracteres por linha, que é um bom comprimento de leitura.
@@ -128,22 +156,22 @@ p {
   padding: .75em 1em;
   color: var(--cor-texto);
   background-color: var(--cor-fundo);
-  border: 2px solid var(--cor-texto);
+  border: var(--espessura-borda) solid var(--cor-texto);
 }
 
 /* :focus-visible: mostra o anel só quando o navegador entende que ele é necessário (teclado).
    Nunca uso "outline: none" sem substituto. */
 .pular:focus-visible {
   inset-block-start: var(--espaco-1);
-  outline: 3px solid var(--cor-foco);
-  outline-offset: 2px;
+  outline: var(--espessura-foco) solid var(--cor-foco);
+  outline-offset: .125rem;
 }
 
 /* CABEÇALHO E NAVEGAÇÃO.
    Fundo escuro: aqui o foco passa a ser branco. A variável é redefinida só dentro desta classe,
    e todos os descendentes que usam var(--cor-foco) herdam o novo valor. */
 .cabecalho {
-  --cor-foco: #fff;
+  --cor-foco: var(--cor-foco-invertido);
   padding: var(--espaco-2);
   text-align: center;
   color: var(--cor-texto-invertido);
@@ -153,7 +181,7 @@ p {
 .marca {
   display: inline-block;
   padding: .25em .5em;
-  font-size: 1.75rem;
+  font-size: var(--texto-marca);
   font-weight: 700;
   color: inherit;
   text-decoration: none;
@@ -163,8 +191,8 @@ p {
 
 .marca:focus-visible,
 .nav__link:focus-visible {
-  outline: 3px solid var(--cor-foco);
-  outline-offset: 2px;
+  outline: var(--espessura-foco) solid var(--cor-foco);
+  outline-offset: .125rem;
 }
 
 /* FLEXBOX: menu em uma dimensão (uma fila de links que pode quebrar).
@@ -192,7 +220,7 @@ p {
   padding: .5em .75em;
   color: inherit;
   text-decoration: none;
-  border-block-end: 2px solid transparent;
+  border-block-end: var(--espessura-borda) solid transparent;
   /* Transição só nas propriedades que mudam. Nunca "transition: all". */
   transition: border-color var(--duracao) var(--curva), transform var(--duracao) var(--curva);
 }
@@ -204,14 +232,14 @@ p {
 }
 
 .nav__link:active {
-  transform: translateY(1px);
+  transform: translateY(.0625rem);
 }
 
 /* DESTAQUE.
    background-color sólido ANTES do gradiente: se a imagem do gradiente não carregar,
    o texto branco continua com fundo escuro. O ponto mais claro do gradiente é o verde (5,15:1). */
 .destaque {
-  --cor-foco: #fff;
+  --cor-foco: var(--cor-foco-invertido);
   padding: var(--espaco-4) var(--espaco-2);
   text-align: center;
   color: var(--cor-texto-invertido);
@@ -297,7 +325,7 @@ p {
   display: inline-block;
   padding: .1em .5em;
   font-weight: 700;
-  border: 2px solid currentColor;
+  border: var(--espessura-borda) solid currentColor;
   /* currentColor: a borda usa a cor do texto */
 }
 
@@ -350,8 +378,8 @@ p {
 }
 
 .table-wrap:focus-visible {
-  outline: 3px solid var(--cor-foco);
-  outline-offset: 2px;
+  outline: var(--espessura-foco) solid var(--cor-foco);
+  outline-offset: .125rem;
 }
 
 .tabela {
@@ -380,7 +408,7 @@ p {
 }
 
 .legenda {
-  font-size: .875rem;
+  font-size: var(--texto-pequeno);
 }
 
 /* FORMULÁRIO. */
@@ -404,7 +432,7 @@ p {
   /* campos não herdam a fonte sozinhos. Aqui eles herdam */
   color: inherit;
   background-color: var(--cor-fundo);
-  border: 2px solid var(--cor-borda-controle);
+  border: var(--espessura-borda) solid var(--cor-borda-controle);
 }
 
 /* ESTADOS DO CAMPO: normal (acima), hover, foco, desabilitado e inválido. */
@@ -413,13 +441,13 @@ p {
 }
 
 .campo__controle:focus-visible {
-  outline: 3px solid var(--cor-foco);
-  outline-offset: 2px;
+  outline: var(--espessura-foco) solid var(--cor-foco);
+  outline-offset: .125rem;
 }
 
 .campo__controle:disabled {
-  color: #595959;
-  background-color: #eee;
+  color: var(--cor-desabilitado-texto);
+  background-color: var(--cor-desabilitado-fundo);
   border-color: var(--cor-borda-suave);
 }
 
@@ -453,7 +481,7 @@ p {
   font-weight: 700;
   color: var(--cor-texto-invertido);
   background-color: var(--cor-marca);
-  border: 2px solid var(--cor-marca);
+  border: var(--espessura-borda) solid var(--cor-marca);
   cursor: pointer;
   transition: background-color var(--duracao) var(--curva), transform var(--duracao) var(--curva);
 }
@@ -468,21 +496,21 @@ p {
 }
 
 .btn:focus-visible {
-  outline: 3px solid var(--cor-foco);
-  outline-offset: 3px;
+  outline: var(--espessura-foco) solid var(--cor-foco);
+  outline-offset: .1875rem;
 }
 
 .btn:disabled {
-  color: #595959;
-  background-color: #e0e0e0;
-  border-color: #bdbdbd;
+  color: var(--cor-desabilitado-texto);
+  background-color: var(--cor-desabilitado-fundo-btn);
+  border-color: var(--cor-desabilitado-borda);
   cursor: not-allowed;
   transform: none;
 }
 
 /* RODAPÉ. Fundo escuro: foco branco. */
 .rodape {
-  --cor-foco: #fff;
+  --cor-foco: var(--cor-foco-invertido);
   padding: var(--espaco-1) var(--espaco-2);
   text-align: center;
   color: var(--cor-texto-invertido);
