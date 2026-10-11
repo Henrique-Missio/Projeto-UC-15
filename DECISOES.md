@@ -20,9 +20,9 @@ Aqui eu registro o porquê. O que foi feito, com classes, larguras e medidas, es
 ## D-03: Fallback e melhoria progressiva (T01)
 
 - Recurso escolhido: o formulário e as tabelas.
-- Piso: sem CSS, o conteúdo está inteiro no HTML. Sem JavaScript, a navegação por âncoras funciona. A mensagem de erro de cada campo existe no HTML e só aparece por CSS ('input:user-invalid ~ .erro').
+- Piso: sem CSS, o conteúdo está inteiro no HTML. Sem JavaScript, a navegação por âncoras funciona. A mensagem de erro de cada campo existe no HTML com o atributo `hidden`. O CSS a mostra em `:user-invalid`. O `aria-describedby` é ligado por JS na T07, só quando o campo é inválido.
 - Melhoria: o CSS acrescenta grade, container query e estados.
-- Pendência: a ordem de leitura sem CSS ainda precisa ser conferida por mim com os olhos.
+- Conferido em 11/10/2026: a ordem de leitura sem CSS segue a ordem do HTML.
 
 ## D-04: Tokens e unidades (T02)
 
