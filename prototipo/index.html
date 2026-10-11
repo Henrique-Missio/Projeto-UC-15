@@ -1,0 +1,316 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FutNotícias: notícias, calendário e classificação</title>
+  <!-- Descrição: pode ser usada como trecho na busca. -->
+  <meta name="description"
+    content="Notícias, calendário de jogos e classificação da temporada no FutNotícias, portal fictício de futebol feito para aula.">
+  <link rel="stylesheet" href="assets/styles.css">
+</head>
+
+<body>
+
+  <!-- Link "pular": primeiro item do Tab. Leva teclado e leitor de tela direto ao conteúdo,
+       sem passar pelo menu toda vez. Fica fora da tela até receber foco-->
+  <a class="pular" href="#conteudo">Pular para o conteúdo</a>
+
+  <!-- header: introdução da página (marca e navegação). -->
+  <header class="cabecalho">
+    <!-- A marca é um link para o topo. O h1 da página está no destaque, mais abaixo. -->
+    <a class="marca" href="#inicio">FutNotícias</a>
+    <!-- nav: região de navegação principal.
+         aria-label dá nome à região, para o leitor de tela anunciar "Principal, navegação". -->
+    <nav aria-label="Principal">
+      <!-- ul/li: o leitor de tela anuncia "lista com 5 itens". -->
+      <ul class="nav">
+        <!-- aria-current="page": avisa qual item é o atual, sem depender só de cor ou sublinhado. -->
+        <li><a class="nav__link" href="#inicio" aria-current="page">Home</a></li>
+        <!-- Cada href aponta para um id que existe na página. Nenhum href="#". -->
+        <li><a class="nav__link" href="#noticias">Notícias</a></li>
+        <li><a class="nav__link" href="#calendario">Calendário</a></li>
+        <li><a class="nav__link" href="#classificacao">Classificação</a></li>
+        <li><a class="nav__link" href="#contato">Contato</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <!-- main: conteúdo principal. Existe só um por página. É o alvo do link "pular". -->
+  <main id="conteudo">
+
+    <!-- section: bloco temático com título próprio.
+         aria-labelledby liga a section ao h1 (o título vira o nome da região). -->
+    <section class="destaque" id="inicio" aria-labelledby="titulo-destaque">
+      <!-- O único h1 da página. A hierarquia segue h1 > h2 > h3, sem pular nível. -->
+      <h1 id="titulo-destaque">Bem-vindo ao portal de Futebol</h1>
+      <p>Acompanhe aqui as novidades do seu time.</p>
+      <!-- Imagem principal: está na primeira tela, então é a candidata a LCP.
+           - src: arquivo padrão, usado se o navegador não entender srcset.
+           - srcset (descritores "w"): três arquivos, com a largura real de cada um.
+           - sizes: diz ao navegador quanto espaço a imagem ocupa. Com 42rem ou mais, 40rem.
+             Abaixo disso, a largura da janela menos 2rem de padding.
+             O navegador cruza sizes com a densidade da tela e escolhe um arquivo.
+           - width e height: reservam a proporção 3:2 antes do download e evitam salto de layout (CLS).
+           - alt: descreve a imagem para quem não a vê.
+           - fetchpriority="high": pede o download cedo.
+           - Sem loading="lazy" de propósito: adiar a imagem principal atrasaria o LCP.
+             O lazy fica para imagens abaixo da primeira tela, sempre com width e height. -->
+      <img class="destaque__img" src="assets/img/estadio-960.svg"
+        srcset="assets/img/estadio-480.svg 480w, assets/img/estadio-960.svg 960w, assets/img/estadio-1440.svg 1440w"
+        sizes="(min-width: 42rem) 40rem, calc(100vw - 2rem)" width="960" height="640"
+        alt="Ilustração de um estádio de futebol visto de cima, com o campo listrado em verde e as marcações em branco"
+        fetchpriority="high">
+    </section>
+
+    <!-- div.layout: só agrupamento visual (grade de colunas). Sem significado, por isso é div. -->
+    <div class="layout">
+
+      <div class="coluna">
+
+        <section id="noticias" aria-labelledby="titulo-noticias">
+          <h2 id="titulo-noticias">Últimas Notícias</h2>
+
+          <!-- .slot: contêiner da container query. A ficha dentro dele muda de arranjo
+               conforme a largura do slot, não da janela. -->
+          <div class="slot">
+            <!-- article: conteúdo que faz sentido sozinho (um jogo). -->
+            <article class="ficha">
+              <h3>Último resultado</h3>
+              <p class="ficha__times"><span>Time da Casa</span> <span>2 x 0</span> <span>Vale FC</span></p>
+              <!-- A palavra "Vitória" em texto: o resultado nunca depende só de cor.
+                   time/datetime: a data em formato que máquina entende. -->
+              <p class="ficha__meta"><span class="selo">Vitória</span> <time datetime="2026-10-04">04/10/2026</time>,
+                Estádio Municipal</p>
+            </article>
+          </div>
+
+          <div class="grade-noticias">
+            <!-- Um article por notícia. Cada um tem o seu h3. -->
+            <article class="card">
+              <h3>Resultado do Fim de Semana</h3>
+              <p><span class="selo">Vitória</span></p>
+              <p>O time da casa venceu por 2x0 no clássico regional.</p>
+            </article>
+            <article class="card">
+              <h3>Novo Reforço</h3>
+              <p>A equipe anunciou a contratação do novo atacante para a temporada.</p>
+            </article>
+            <article class="card">
+              <h3>Treino aberto</h3>
+              <p>A torcida pode acompanhar o treino aberto na quinta-feira, antes do próximo jogo.</p>
+            </article>
+          </div>
+        </section>
+
+        <section id="calendario" aria-labelledby="titulo-calendario">
+          <h2 id="titulo-calendario">Calendário</h2>
+          <!-- Tabela larga pode passar da tela. Este div rola na horizontal, e só ele rola.
+               - role="region" + aria-label: dão nome à área rolável.
+               - tabindex="0": quem usa teclado consegue focar a área e rolar com as setas. -->
+          <div class="table-wrap" role="region"
+            aria-label="Tabela do calendário (rola na horizontal em telas estreitas)" tabindex="0">
+            <!-- table: dados com linhas e colunas. Não é usada para layout. -->
+            <table class="tabela">
+              <!-- caption: nome da tabela. O leitor de tela anuncia antes dos dados. -->
+              <caption>Últimos e próximos jogos do Time da Casa</caption>
+              <thead>
+                <tr>
+                  <!-- th scope="col": o cabeçalho vale para a coluna inteira. -->
+                  <th scope="col">Data</th>
+                  <th scope="col">Jogo</th>
+                  <th scope="col">Local</th>
+                  <th scope="col">Resultado</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <!-- th scope="row": a data identifica a linha. Cada célula é lida com seu contexto. -->
+                  <th scope="row"><time datetime="2026-09-27">27/09</time></th>
+                  <td>Cidade Alta x Time da Casa</td>
+                  <td>Arena Cidade Alta</td>
+                  <td>Empate, 1 x 1</td>
+                </tr>
+                <tr>
+                  <th scope="row"><time datetime="2026-10-04">04/10</time></th>
+                  <td>Time da Casa x Vale FC</td>
+                  <td>Estádio Municipal</td>
+                  <td>Vitória, 2 x 0</td>
+                </tr>
+                <tr>
+                  <th scope="row"><time datetime="2026-10-11">11/10</time></th>
+                  <td>Serrana EC x Time da Casa</td>
+                  <td>Arena Serra</td>
+                  <td>A jogar</td>
+                </tr>
+                <tr>
+                  <th scope="row"><time datetime="2026-10-18">18/10</time></th>
+                  <td>Time da Casa x Litoral AC</td>
+                  <td>Estádio Municipal</td>
+                  <td>A jogar</td>
+                </tr>
+                <tr>
+                  <th scope="row"><time datetime="2026-10-25">25/10</time></th>
+                  <td>Planalto FC x Time da Casa</td>
+                  <td>Campo do Planalto</td>
+                  <td>A jogar</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section id="classificacao" aria-labelledby="titulo-classificacao">
+          <h2 id="titulo-classificacao">Classificação</h2>
+          <div class="table-wrap" role="region"
+            aria-label="Tabela de classificação (rola na horizontal em telas estreitas)" tabindex="0">
+            <table class="tabela">
+              <caption>Classificação da temporada após 8 rodadas</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Pos.</th>
+                  <th scope="col">Time</th>
+                  <!-- As siglas P, J, V, E, D são explicadas na legenda logo abaixo da tabela. -->
+                  <th scope="col">P</th>
+                  <th scope="col">J</th>
+                  <th scope="col">V</th>
+                  <th scope="col">E</th>
+                  <th scope="col">D</th>
+                </tr>
+              </thead>
+              <tbody>
+                <!-- O nome do time é th scope="row": identifica a linha. -->
+                <tr>
+                  <td>1</td>
+                  <th scope="row">Time da Casa</th>
+                  <td>17</td>
+                  <td>8</td>
+                  <td>5</td>
+                  <td>2</td>
+                  <td>1</td>
+                </tr>
+                <tr>
+                  <td>2</td>
+                  <th scope="row">Vale FC</th>
+                  <td>14</td>
+                  <td>8</td>
+                  <td>4</td>
+                  <td>2</td>
+                  <td>2</td>
+                </tr>
+                <tr>
+                  <td>3</td>
+                  <th scope="row">Serrana EC</th>
+                  <td>12</td>
+                  <td>8</td>
+                  <td>3</td>
+                  <td>3</td>
+                  <td>2</td>
+                </tr>
+                <tr>
+                  <td>4</td>
+                  <th scope="row">Litoral AC</th>
+                  <td>11</td>
+                  <td>8</td>
+                  <td>3</td>
+                  <td>2</td>
+                  <td>3</td>
+                </tr>
+                <tr>
+                  <td>5</td>
+                  <th scope="row">Planalto FC</th>
+                  <td>8</td>
+                  <td>8</td>
+                  <td>2</td>
+                  <td>2</td>
+                  <td>4</td>
+                </tr>
+                <tr>
+                  <td>6</td>
+                  <th scope="row">Cidade Alta</th>
+                  <td>4</td>
+                  <td>8</td>
+                  <td>1</td>
+                  <td>1</td>
+                  <td>6</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <p class="legenda">P: pontos. J: jogos. V: vitórias. E: empates. D: derrotas.</p>
+        </section>
+
+        <section id="contato" aria-labelledby="titulo-contato">
+          <h2 id="titulo-contato">Contato</h2>
+          <!-- A instrução vem antes do formulário e é ligada a ele por aria-describedby.
+               O leitor de tela lê a instrução ao entrar no formulário. -->
+          <p id="contato-instrucao">Todos os campos são obrigatórios. Este formulário é uma demonstração e não envia
+            dados.</p>
+          <!-- form: agrupa os controles e permite envio com Enter. -->
+          <form action="#contato" method="post" aria-describedby="contato-instrucao">
+            <div class="campo">
+              <!-- label + for/id: o rótulo fica ligado ao campo. Clicar no texto foca o campo.
+                   O rótulo é visível e fixo. Não uso placeholder no lugar dele. -->
+              <label class="campo__rotulo" for="nome">Nome</label>
+              <!-- required: validação nativa do navegador.
+                   autocomplete="name": o navegador sugere o nome.
+                   aria-describedby: liga o campo à mensagem de erro logo abaixo. -->
+              <input class="campo__controle" id="nome" name="nome" type="text" autocomplete="name" required
+                aria-describedby="nome-erro">
+              <!-- A mensagem de erro existe no HTML, mas o CSS a esconde.
+                   Ela aparece quando o campo fica inválido (:user-invalid).
+                   "Erro:" em texto: o erro não depende só da cor vermelha. -->
+              <p class="erro" id="nome-erro"><strong>Erro:</strong> informe seu nome.</p>
+            </div>
+            <div class="campo">
+              <label class="campo__rotulo" for="email">E-mail</label>
+              <!-- type="email": o navegador valida o formato e mostra o teclado certo no celular. -->
+              <input class="campo__controle" id="email" name="email" type="email" autocomplete="email" required
+                aria-describedby="email-erro">
+              <p class="erro" id="email-erro"><strong>Erro:</strong> informe um e-mail válido, como nome@exemplo.com.
+              </p>
+            </div>
+            <div class="campo">
+              <label class="campo__rotulo" for="mensagem">Mensagem</label>
+              <textarea class="campo__controle" id="mensagem" name="mensagem" rows="4" required
+                aria-describedby="mensagem-erro"></textarea>
+              <p class="erro" id="mensagem-erro"><strong>Erro:</strong> escreva uma mensagem.</p>
+            </div>
+            <!-- button type="submit": botão nativo. Funciona com Tab, Enter e Espaço sem código extra. -->
+            <button class="btn" type="submit">Enviar mensagem</button>
+            <!-- role="status": região "viva" e educada. Quando o texto mudar, o leitor de tela
+                 anuncia a mudança sem mover o foco. Fica vazio até o JavaScript do T07 preenchê-lo. -->
+            <p id="contato-status" role="status"></p>
+          </form>
+        </section>
+
+      </div>
+
+      <!-- aside: conteúdo complementar. Fica depois do conteúdo principal no HTML,
+           e também na ordem visual no desktop. Nenhuma propriedade de ordem é usada. -->
+      <aside class="lateral" aria-labelledby="titulo-lateral">
+        <h2 id="titulo-lateral">Em campo</h2>
+        <!-- Mesmo componente "ficha" da seção de notícias, num slot mais estreito.
+             Aqui a container query o empilha. Na coluna principal ele fica lado a lado. -->
+        <div class="slot">
+          <article class="ficha">
+            <h3>Próximo jogo</h3>
+            <p class="ficha__times"><span>Serrana EC</span> <span>x</span> <span>Time da Casa</span></p>
+            <p class="ficha__meta"><time datetime="2026-10-11">11/10/2026</time>, Arena Serra</p>
+          </article>
+        </div>
+      </aside>
+
+    </div>
+  </main>
+
+  <!-- footer: encerramento da página. Créditos e licença do conteúdo. -->
+  <footer class="rodape">
+    <p>Projeto de Aula - 2026</p>
+    <p>Conteúdo fictício. Textos e ilustrações autorais, licença CC BY 4.0.</p>
+  </footer>
+
+</body>
+
+</html>

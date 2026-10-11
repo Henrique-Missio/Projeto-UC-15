@@ -1,0 +1,516 @@
+/* TOKENS (custom properties).
+   Cada valor de cor, espaço, fonte e movimento mora aqui, uma única vez.
+   O resto do CSS usa var(--nome). Para mudar o verde da marca, troco uma linha.
+   Os nomes dizem o PAPEL ("marca", "foco", "erro"), não a aparência ("verde", "azul").
+   Assim o nome continua certo mesmo se a cor mudar. */
+:root {
+  --cor-marca: #1b7e32;
+  /* verde da marca. Branco sobre ele: 5,15:1 (mínimo AA: 4,5:1) */
+  --cor-marca-escura: #14602a;
+  /* hover e clique do botão */
+  --cor-superficie-escura: #333;
+  /* destaque, cabeçalho de tabela e rodapé */
+  --cor-fundo: #fff;
+  --cor-texto: #1f1f1f;
+  --cor-texto-invertido: #fff;
+  /* texto sobre superfície escura */
+  --cor-borda-suave: #ddd;
+  /* só decoração (cartões). Não serve para controles */
+  --cor-borda-controle: #767676;
+  /* borda dos campos: 4,54:1 sobre branco (mínimo para componente: 3:1) */
+  --cor-foco: #0b57d0;
+  /* anel de foco no fundo claro. Nos fundos escuros ele muda para branco */
+  --cor-erro: #b3261e;
+  /* 5,72:1 sobre o fundo de erro */
+  --cor-erro-fundo: #fdecea;
+
+  /* Escala de espaço em rem. Todo espaçamento sai destes quatro valores. */
+  --espaco-1: .5rem;
+  --espaco-2: 1rem;
+  --espaco-3: 1.5rem;
+  --espaco-4: 2.5rem;
+
+  --fonte: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  /* fonte do sistema: nenhum download */
+  --borda: 1px solid var(--cor-borda-suave);
+  /* token que usa outro token */
+
+  /* Movimento: duração e curva num lugar só. 160ms é rápido o bastante para não atrasar a tarefa. */
+  --duracao: 160ms;
+  --curva: ease-out;
+}
+
+/* BASE: valores herdados a partir do body. */
+
+/* border-box: width e inline-size passam a incluir padding e borda.
+   Evita estouro de largura quando somo padding a uma largura de 100%. */
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+/* O body define fonte, cor e fundo. Os descendentes herdam, sem repetir. */
+body {
+  margin: 0;
+  /* Grid de 1 coluna e 3 linhas: cabeçalho, main, rodapé.
+     A linha do meio (1fr) absorve o espaço que sobra, e o rodapé fica no fim da tela
+     mesmo quando há pouco conteúdo.
+     minmax(0, 1fr): a coluna pode encolher abaixo do conteúdo mínimo. Evita rolagem horizontal. */
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  grid-template-rows: auto 1fr auto;
+  /* rodapé fica no fim da tela */
+  /* Fallback primeiro, melhoria depois: um navegador que não entende "dvh" ignora a segunda linha.
+     dvh = altura dinâmica da janela, que acompanha as barras do navegador no celular.
+     min-block-size (altura mínima): a página cresce se o conteúdo crescer. Nunca corta. */
+  min-block-size: 100vh;
+  min-block-size: 100dvh;
+  font-family: var(--fonte);
+  line-height: 1.5;
+  /* sem unidade: acompanha o tamanho de cada fonte */
+  color: var(--cor-texto);
+  background-color: var(--cor-fundo);
+}
+
+/* Imagem fluida: nunca passa da largura do pai.
+   block-size: auto mantém a proporção definida por width e height do HTML. */
+img {
+  display: block;
+  max-inline-size: 100%;
+  block-size: auto;
+}
+
+h1,
+h2,
+h3 {
+  line-height: 1.2;
+  margin-block: 0 var(--espaco-1);
+}
+
+/* clamp(mínimo, preferido, máximo): título fluido com piso e teto.
+   - piso 2rem: nunca fica menor que isso.
+   - preferido 1.5rem + 2vw: cresce com a janela. O termo em rem respeita a fonte que o usuário escolheu.
+   - teto 3.5rem: nunca fica maior que isso.
+   A linha acima é o fallback para navegador que não entende clamp(). */
+h1 {
+  font-size: 2rem;
+  /* piso de segurança */
+  font-size: clamp(2rem, 1.5rem + 2vw, 3.5rem);
+}
+
+/* rem: tamanho relativo à fonte da raiz. Se o usuário aumentar a fonte do navegador, o texto acompanha.
+   px não faz isso. */
+h2 {
+  font-size: 1.5rem;
+}
+
+h3 {
+  font-size: 1.25rem;
+}
+
+/* 65ch: no máximo uns 65 caracteres por linha, que é um bom comprimento de leitura.
+   ch = largura do "0" na fonte atual. */
+p {
+  margin-block: 0 var(--espaco-1);
+  max-inline-size: 65ch;
+}
+
+/* PULAR PARA O CONTEÚDO.
+   position: absolute tira o link da grade do body (senão ele viraria uma linha extra).
+   Fica fora da tela (-4rem). Ao receber foco por teclado, desce para a tela. */
+.pular {
+  position: absolute;
+  inset-inline-start: var(--espaco-2);
+  inset-block-start: -4rem;
+  z-index: 1;
+  /* em: o padding acompanha o tamanho da fonte do próprio elemento. */
+  padding: .75em 1em;
+  color: var(--cor-texto);
+  background-color: var(--cor-fundo);
+  border: 2px solid var(--cor-texto);
+}
+
+/* :focus-visible: mostra o anel só quando o navegador entende que ele é necessário (teclado).
+   Nunca uso "outline: none" sem substituto. */
+.pular:focus-visible {
+  inset-block-start: var(--espaco-1);
+  outline: 3px solid var(--cor-foco);
+  outline-offset: 2px;
+}
+
+/* CABEÇALHO E NAVEGAÇÃO.
+   Fundo escuro: aqui o foco passa a ser branco. A variável é redefinida só dentro desta classe,
+   e todos os descendentes que usam var(--cor-foco) herdam o novo valor. */
+.cabecalho {
+  --cor-foco: #fff;
+  padding: var(--espaco-2);
+  text-align: center;
+  color: var(--cor-texto-invertido);
+  background-color: var(--cor-marca);
+}
+
+.marca {
+  display: inline-block;
+  padding: .25em .5em;
+  font-size: 1.75rem;
+  font-weight: 700;
+  color: inherit;
+  text-decoration: none;
+  overflow-wrap: anywhere;
+  /* em janela muito estreita, a palavra quebra em vez de estourar */
+}
+
+.marca:focus-visible,
+.nav__link:focus-visible {
+  outline: 3px solid var(--cor-foco);
+  outline-offset: 2px;
+}
+
+/* FLEXBOX: menu em uma dimensão (uma fila de links que pode quebrar).
+   - display: flex coloca os li lado a lado (eixo principal horizontal).
+   - flex-wrap: wrap deixa os itens irem para a linha de baixo quando não cabem.
+   - gap: espaço entre os itens, sem margem em cada um. */
+.nav {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--espaco-1);
+  margin: var(--espaco-1) 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* flex: 1 1 10rem = crescer 1, encolher 1, tamanho inicial 10rem.
+   Cada item parte de 10rem, quebra de linha quando falta espaço e cresce para preencher a linha.
+   Em 320px, um link por linha (bom para toque). Em tela larga, todos numa linha. */
+.nav>li {
+  flex: 1 1 10rem;
+}
+
+.nav__link {
+  display: block;
+  padding: .5em .75em;
+  color: inherit;
+  text-decoration: none;
+  border-block-end: 2px solid transparent;
+  /* Transição só nas propriedades que mudam. Nunca "transition: all". */
+  transition: border-color var(--duracao) var(--curva), transform var(--duracao) var(--curva);
+}
+
+/* Hover e item atual usam o mesmo sinal: uma linha embaixo (não é só cor). */
+.nav__link:hover,
+.nav__link[aria-current="page"] {
+  border-block-end-color: currentColor;
+}
+
+.nav__link:active {
+  transform: translateY(1px);
+}
+
+/* DESTAQUE.
+   background-color sólido ANTES do gradiente: se a imagem do gradiente não carregar,
+   o texto branco continua com fundo escuro. O ponto mais claro do gradiente é o verde (5,15:1). */
+.destaque {
+  --cor-foco: #fff;
+  padding: var(--espaco-4) var(--espaco-2);
+  text-align: center;
+  color: var(--cor-texto-invertido);
+  background-color: var(--cor-superficie-escura);
+  background-image: linear-gradient(135deg, var(--cor-superficie-escura), var(--cor-marca));
+}
+
+.destaque p {
+  margin-inline: auto;
+  /* centraliza o parágrafo limitado a 65ch */
+}
+
+.destaque__img {
+  inline-size: 100%;
+  max-inline-size: 40rem;
+  /* tem de ser igual ao slot declarado em "sizes" no HTML */
+  margin: var(--espaco-3) auto 0;
+}
+
+/* LAYOUT PRINCIPAL.
+   Base (celular): grade de uma coluna. A ordem visual é igual à ordem do HTML. */
+.layout {
+  display: grid;
+  gap: var(--espaco-4);
+  inline-size: 100%;
+  max-inline-size: 70rem;
+  margin-inline: auto;
+  padding: var(--espaco-3) var(--espaco-2);
+}
+
+/* min-inline-size: 0 deixa o item da grade encolher, mesmo com uma palavra ou URL longa dentro.
+   Sem isso, o conteúdo mínimo empurraria a página para fora da tela. */
+.coluna,
+.lateral {
+  min-inline-size: 0;
+}
+
+.coluna>section {
+  margin-block-end: var(--espaco-4);
+}
+
+/* Breakpoint 56rem: a coluna principal passa a ter ao menos
+   dois cartões de 14rem lado a lado. Antes disso, uma coluna só.
+   O ponto vem do conteúdo, não do nome de um aparelho.
+   GRID: layout em duas dimensões. Aqui, duas colunas: a principal (minmax(0, 1fr), ocupa o que sobra)
+   e a lateral (18rem fixos). */
+@media (min-width: 56rem) {
+  .layout {
+    grid-template-columns: minmax(0, 1fr) 18rem;
+  }
+}
+
+/* CARTÕES DE NOTÍCIA.
+   GRID com auto-fit: o navegador decide quantas colunas cabem.
+   - repeat(auto-fit, ...): cria quantas colunas couberem e recolhe as vazias.
+   - minmax(min(100%, 14rem), 1fr): cada coluna tem no mínimo 14rem e, se a tela for menor, 100%.
+     Isso evita estouro em 320px. O máximo é uma fração do espaço livre.
+   Resultado: sem media query, 1, 2 ou 3 colunas conforme o espaço. */
+.grade-noticias {
+  display: grid;
+  gap: var(--espaco-2);
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 14rem), 1fr));
+}
+
+.card {
+  min-inline-size: 0;
+  padding: var(--espaco-2);
+  background-color: var(--cor-fundo);
+  border: var(--borda);
+  overflow-wrap: anywhere;
+  /* palavra longa quebra em vez de estourar */
+  transition: transform var(--duracao) var(--curva), border-color var(--duracao) var(--curva);
+}
+
+/* O transform move só a pintura. O espaço original continua reservado no fluxo. Nada ao redor se mexe. */
+.card:hover {
+  border-color: var(--cor-borda-controle);
+  transform: translateY(-.25rem);
+}
+
+/* Resultado sempre em texto, nunca só cor. */
+.selo {
+  display: inline-block;
+  padding: .1em .5em;
+  font-weight: 700;
+  border: 2px solid currentColor;
+  /* currentColor: a borda usa a cor do texto */
+}
+
+/* FICHA DE JOGO: um componente, dois contextos.
+   container: ficha / inline-size transforma o .slot em contêiner de consulta, com o nome "ficha".
+   A ficha olha para a largura do SLOT, não da janela.
+   Base (fora da query): campos empilhados, legível em qualquer espaço. */
+.slot {
+  container: ficha / inline-size;
+  margin-block-end: var(--espaco-2);
+}
+
+.ficha {
+  display: grid;
+  gap: var(--espaco-1);
+  padding: var(--espaco-2);
+  border: var(--borda);
+}
+
+.ficha h3 {
+  margin: 0;
+}
+
+.ficha__times {
+  display: grid;
+  gap: .25rem;
+  margin: 0;
+  font-weight: 700;
+}
+
+.ficha__meta {
+  margin: 0;
+}
+
+/* Quando o slot tem 30rem ou mais, os times ficam lado a lado.
+   Na lateral (18rem) a ficha continua empilhada, na mesma janela. */
+@container ficha (min-width: 30rem) {
+  .ficha__times {
+    grid-template-columns: 1fr auto 1fr;
+    align-items: center;
+    text-align: center;
+  }
+}
+
+/* TABELAS: a rolagem horizontal fica só dentro deste contêiner.
+   A página nunca rola na horizontal por causa de uma tabela larga. */
+.table-wrap {
+  overflow-x: auto;
+  border: var(--borda);
+}
+
+.table-wrap:focus-visible {
+  outline: 3px solid var(--cor-foco);
+  outline-offset: 2px;
+}
+
+.tabela {
+  inline-size: 100%;
+  min-inline-size: 24rem;
+  /* abaixo disso a tabela rola dentro do wrap, em vez de espremer as colunas */
+  border-collapse: collapse;
+}
+
+.tabela caption {
+  padding: var(--espaco-1);
+  text-align: start;
+  font-weight: 700;
+}
+
+.tabela th,
+.tabela td {
+  padding: .5em .75em;
+  text-align: start;
+  border-block-end: var(--borda);
+}
+
+.tabela thead th {
+  color: var(--cor-texto-invertido);
+  background-color: var(--cor-superficie-escura);
+}
+
+.legenda {
+  font-size: .875rem;
+}
+
+/* FORMULÁRIO. */
+.campo {
+  display: grid;
+  gap: .25rem;
+  margin-block-end: var(--espaco-2);
+  max-inline-size: 32rem;
+}
+
+.campo__rotulo {
+  font-weight: 700;
+}
+
+/* Campo com altura mínima de 2,75rem (44px): alvo de toque confortável. A meta mínima da WCAG é 24px. */
+.campo__controle {
+  inline-size: 100%;
+  min-block-size: 2.75rem;
+  padding: .6em .75em;
+  font: inherit;
+  /* campos não herdam a fonte sozinhos. Aqui eles herdam */
+  color: inherit;
+  background-color: var(--cor-fundo);
+  border: 2px solid var(--cor-borda-controle);
+}
+
+/* ESTADOS DO CAMPO: normal (acima), hover, foco, desabilitado e inválido. */
+.campo__controle:hover {
+  border-color: var(--cor-texto);
+}
+
+.campo__controle:focus-visible {
+  outline: 3px solid var(--cor-foco);
+  outline-offset: 2px;
+}
+
+.campo__controle:disabled {
+  color: #595959;
+  background-color: #eee;
+  border-color: var(--cor-borda-suave);
+}
+
+/* :user-invalid: só vale depois de o usuário mexer no campo.
+   Assim o formulário não aparece todo vermelho antes de alguém digitar. */
+.campo__controle:user-invalid {
+  border-color: var(--cor-erro);
+  background-color: var(--cor-erro-fundo);
+}
+
+/* A mensagem de erro existe no HTML e fica escondida. Quando o campo fica inválido, ela aparece.
+   O seletor ~ pega o irmão .erro que vem depois do campo.
+   O erro tem texto ("Erro: ..."), borda e fundo. Não depende só de cor. */
+.erro {
+  display: none;
+  margin: 0;
+  font-weight: 700;
+  color: var(--cor-erro);
+}
+
+.campo__controle:user-invalid~.erro {
+  display: block;
+}
+
+/* BOTÃO: normal, hover, ativo (clique), foco e desabilitado. */
+.btn {
+  display: inline-block;
+  min-block-size: 2.75rem;
+  padding: .75em 1.25em;
+  font: inherit;
+  font-weight: 700;
+  color: var(--cor-texto-invertido);
+  background-color: var(--cor-marca);
+  border: 2px solid var(--cor-marca);
+  cursor: pointer;
+  transition: background-color var(--duracao) var(--curva), transform var(--duracao) var(--curva);
+}
+
+.btn:hover {
+  background-color: var(--cor-marca-escura);
+  border-color: var(--cor-marca-escura);
+}
+
+.btn:active {
+  transform: translateY(.125rem);
+}
+
+.btn:focus-visible {
+  outline: 3px solid var(--cor-foco);
+  outline-offset: 3px;
+}
+
+.btn:disabled {
+  color: #595959;
+  background-color: #e0e0e0;
+  border-color: #bdbdbd;
+  cursor: not-allowed;
+  transform: none;
+}
+
+/* RODAPÉ. Fundo escuro: foco branco. */
+.rodape {
+  --cor-foco: #fff;
+  padding: var(--espaco-1) var(--espaco-2);
+  text-align: center;
+  color: var(--cor-texto-invertido);
+  background-color: var(--cor-superficie-escura);
+}
+
+.rodape p {
+  margin-inline: auto;
+}
+
+/* Movimento reduzido: sem transição e sem deslocamento. O estado final
+   (cor, borda, foco) continua o mesmo.
+   prefers-reduced-motion: reduce corresponde quando a pessoa pediu "menos movimento" no sistema
+   operacional (por causa de enjoo, vestibular ou distração).
+   Escolhi desligar só o que é decoração: o translateY e as transições.
+   Nada de informação some junto: a borda ainda muda no hover, o foco continua visível.
+   A regra vem por último e tem a mesma especificidade das originais, então vence pela ordem. */
+@media (prefers-reduced-motion: reduce) {
+
+  .card,
+  .btn,
+  .nav__link {
+    transition: none;
+  }
+
+  .card:hover,
+  .btn:active,
+  .nav__link:active {
+    transform: none;
+  }
+}

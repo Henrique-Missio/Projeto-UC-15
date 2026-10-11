@@ -1,0 +1,18 @@
+# Dependências e testes (T11)
+node_modules/
+test-results/
+playwright-report/
+
+# Segredos e dados sensíveis (nunca versionar)
+.env
+wp-config.php
+*.sql
+*.zip
+
+# WordPress: só o tema filho entra no repositório
+wordpress/*
+!wordpress/tema-filho/
+
+# Arquivos do sistema
+.DS_Store
+Thumbs.db

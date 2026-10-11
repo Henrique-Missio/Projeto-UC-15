@@ -1,0 +1,387 @@
+<!doctype html>
+<html lang="pt-BR">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FutNotícias com Bootstrap: notícias, calendário e classificação</title>
+  <meta name="description"
+    content="Versão do FutNotícias feita com Bootstrap 5.3.8 local: notícias, calendário de jogos e classificação da temporada.">
+  <!-- CSS do Bootstrap, versão fixa e local. Funciona offline. -->
+  <link rel="stylesheet" href="assets/vendor/bootstrap-5.3.8/bootstrap.min.css">
+  <!-- Minhas duas regras próprias. -->
+  <style>
+    /* Verde da marca. O Bootstrap não tem esta cor, então nenhuma classe "bg-*" resolve.
+       Uma classe só, com baixa especificidade (0-1-0), e sem !important. */
+    .navbar-marca {
+      background-color: #1b7e32;
+    }
+
+    /* Cada componente do Bootstrap lê variáveis locais próprias. O botão lê as --bs-btn-*.
+       Troco os valores dentro de um escopo. Não edito o arquivo minificado.
+       Especificidade 0-2-0: ganha de ".btn-primary" (0-1-0) só dentro de .marca-futnoticias.
+       Cada estado tem o seu grupo de variáveis. Se eu trocasse só o fundo normal,
+       o hover, o clique e o foco ficariam com a cor antiga do Bootstrap. */
+    .marca-futnoticias .btn-primary {
+      /* Estado normal. */
+      --bs-btn-color: #fff;
+      --bs-btn-bg: #1b7e32;
+      --bs-btn-border-color: #1b7e32;
+      /* Hover: verde mais escuro, contraste 7,67:1 com o texto branco. */
+      --bs-btn-hover-color: #fff;
+      --bs-btn-hover-bg: #14602a;
+      --bs-btn-hover-border-color: #14602a;
+      /* Anel de foco. O valor é só R, G, B, porque o Bootstrap monta o rgba(...) sozinho. */
+      --bs-btn-focus-shadow-rgb: 27, 126, 50;
+      /* Clique (ativo): ainda mais escuro. */
+      --bs-btn-active-color: #fff;
+      --bs-btn-active-bg: #104d22;
+      --bs-btn-active-border-color: #104d22;
+      /* Desabilitado: mantém a cor da marca. O Bootstrap já aplica a opacidade. */
+      --bs-btn-disabled-color: #fff;
+      --bs-btn-disabled-bg: #1b7e32;
+      --bs-btn-disabled-border-color: #1b7e32;
+    }
+  </style>
+  <!-- JavaScript do Bootstrap (já inclui o Popper). Faz o menu recolher e o modal abrir.
+       defer: baixa em paralelo e só roda depois de o HTML estar pronto. Não bloqueia a leitura da página. -->
+  <script defer src="assets/vendor/bootstrap-5.3.8/bootstrap.bundle.min.js"></script>
+</head>
+<!-- Classes do body:
+     - marca-futnoticias: escopo da customização do botão (ver o bloco de estilo acima).
+     - d-flex flex-column min-vh-100: o corpo vira uma coluna com altura mínima da tela.
+       Com o flex-grow-1 do main, o rodapé fica sempre no fim da tela.
+     - bg-light: fundo cinza muito claro (#f8f9fa). -->
+
+<body class="marca-futnoticias d-flex flex-column min-vh-100 bg-light">
+
+  <!-- Link "pular": a classe visually-hidden-focusable esconde o link, mas ele aparece quando recebe foco. -->
+  <a class="visually-hidden-focusable" href="#conteudo">Pular para o conteúdo</a>
+
+  <!-- header: introdução da página. -->
+  <header>
+    <!-- nav: região de navegação principal, com nome (aria-label).
+         - navbar-expand-md: o menu fica recolhido abaixo de 768px e aberto a partir de 768px.
+         - navbar-marca: a minha classe do verde.
+         - data-bs-theme="dark": texto claro sobre fundo escuro. É o jeito da versão 5.3. A classe navbar-dark está depreciada. -->
+    <nav class="navbar navbar-expand-md navbar-marca" data-bs-theme="dark" aria-label="Principal">
+      <div class="container">
+        <a class="navbar-brand" href="#inicio">FutNotícias</a>
+        <!-- Botão que abre e fecha o menu no celular. É um button de verdade (teclado e leitor de tela).
+             - data-bs-toggle="collapse": o JavaScript do Bootstrap alterna o alvo.
+             - data-bs-target="#menu-principal": qual elemento abre e fecha.
+             - aria-controls: diz ao leitor de tela qual elemento este botão controla.
+             - aria-expanded="false": estado atual (fechado). O Bootstrap troca para "true" ao abrir.
+             - aria-label: nome do botão, já que ele só tem um ícone. -->
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu-principal"
+          aria-controls="menu-principal" aria-expanded="false" aria-label="Alternar navegação">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <!-- O alvo. O id é único e igual ao data-bs-target. Se não bater, o botão não abre nada. -->
+        <div class="collapse navbar-collapse" id="menu-principal">
+          <ul class="navbar-nav ms-auto">
+            <!-- aria-current="page" marca o item atual. A classe active só muda o visual. -->
+            <li class="nav-item"><a class="nav-link active" href="#inicio" aria-current="page">Home</a></li>
+            <li class="nav-item"><a class="nav-link" href="#noticias">Notícias</a></li>
+            <li class="nav-item"><a class="nav-link" href="#calendario">Calendário</a></li>
+            <li class="nav-item"><a class="nav-link" href="#classificacao">Classificação</a></li>
+            <li class="nav-item"><a class="nav-link" href="#contato">Contato</a></li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+  </header>
+
+  <!-- main: conteúdo principal. Único na página. flex-grow-1 ocupa o espaço que sobra e empurra o rodapé. -->
+  <main id="conteudo" class="flex-grow-1">
+
+    <!-- section: destaque, nomeada pelo h1 (aria-labelledby).
+         bg-dark text-white text-center py-5: fundo escuro, texto branco, centralizado, espaço vertical. -->
+    <section id="inicio" class="bg-dark text-white text-center py-5" aria-labelledby="titulo-destaque">
+      <div class="container">
+        <!-- O único h1. A classe "h2" só muda o tamanho visual. O nível do título continua h1. -->
+        <h1 id="titulo-destaque" class="h2">Bem-vindo ao portal de Futebol</h1>
+        <p>Acompanhe aqui as novidades do seu time.</p>
+        <!-- Imagem principal (primeira tela).
+             - img-fluid: nunca passa da largura do container. d-block mx-auto: centralizada.
+             - srcset (descritores "w"): três arquivos com a largura real de cada um.
+             - sizes: a largura que a imagem ocupa em cada faixa do Bootstrap.
+               1200px ou mais: 960px. 992px ou mais: 936px. 768px ou mais: 696px.
+               Abaixo disso: a janela menos 1,5rem de padding do container.
+               Os números vêm da largura do container menos o gutter.
+             - width e height: reservam a proporção 3:2 e evitam salto de layout (CLS).
+             - fetchpriority="high": baixa cedo, porque é a imagem do LCP.
+             - Sem loading="lazy": adiar a imagem principal atrasaria a primeira tela.
+               O lazy serve para imagens abaixo da dobra. -->
+        <img class="img-fluid d-block mx-auto mt-3" src="assets/img/estadio-960.svg"
+          srcset="assets/img/estadio-480.svg 480w, assets/img/estadio-960.svg 960w, assets/img/estadio-1440.svg 1440w"
+          sizes="(min-width: 1200px) 960px, (min-width: 992px) 936px, (min-width: 768px) 696px, calc(100vw - 1.5rem)"
+          width="960" height="640"
+          alt="Ilustração de um estádio de futebol visto de cima, com o campo listrado em verde e as marcações em branco"
+          fetchpriority="high">
+      </div>
+    </section>
+
+    <!-- container: largura máxima por faixa (720, 960, 1140 ou 1320px). my-4: margem vertical. -->
+    <div class="container my-4">
+
+      <section id="noticias" class="mb-5" aria-labelledby="titulo-noticias">
+        <h2 id="titulo-noticias" class="h3">Últimas Notícias</h2>
+
+        <!-- article: conteúdo que faz sentido sozinho. card card-body: caixa com borda e padding do Bootstrap. -->
+        <article class="card card-body mb-3">
+          <h3 class="h5">Último resultado</h3>
+          <p class="fw-bold mb-1">Time da Casa 2 x 0 Vale FC</p>
+          <!-- O badge traz a palavra "Vitória": o resultado não depende só da cor verde.
+               time/datetime: data legível por máquina. -->
+          <p class="mb-0"><span class="badge text-bg-success">Vitória</span> <time
+              datetime="2026-10-04">04/10/2026</time>, Estádio Municipal</p>
+        </article>
+
+        <!-- Grade do Bootstrap (Flexbox por baixo): row é a linha, col-* são as colunas.
+             g-3 dá o espaço entre cartões (gutter).
+             col-12: um cartão por linha na base. col-md-6: dois por linha a partir de 768px.
+             col-lg-4: três por linha a partir de 992px. -->
+        <div class="row g-3">
+          <!-- Cada notícia é um article, filho direto da row. O card fica dentro dele.
+               h-100 iguala a altura dos cartões da mesma linha. -->
+          <article class="col-12 col-md-6 col-lg-4">
+            <div class="card p-3 h-100">
+              <h3 class="h5">Resultado do Fim de Semana</h3>
+              <p><span class="badge text-bg-success">Vitória</span></p>
+              <p class="mb-0">O time da casa venceu por 2x0 no clássico regional.</p>
+            </div>
+          </article>
+          <article class="col-12 col-md-6 col-lg-4">
+            <div class="card p-3 h-100">
+              <h3 class="h5">Novo Reforço</h3>
+              <p class="mb-0">A equipe anunciou a contratação do novo atacante para a temporada.</p>
+            </div>
+          </article>
+          <article class="col-12 col-md-6 col-lg-4">
+            <div class="card p-3 h-100">
+              <h3 class="h5">Treino aberto</h3>
+              <p class="mb-0">A torcida pode acompanhar o treino aberto na quinta-feira, antes do próximo jogo.</p>
+            </div>
+          </article>
+        </div>
+      </section>
+
+      <section id="calendario" class="mb-5" aria-labelledby="titulo-calendario">
+        <h2 id="titulo-calendario" class="h3">Calendário</h2>
+        <!-- table-responsive: só este div rola na horizontal em tela estreita. A página não rola.
+             role="region" + aria-label + tabindex="0": a área rolável tem nome e recebe foco por teclado. -->
+        <div class="table-responsive" role="region"
+          aria-label="Tabela do calendário (rola na horizontal em telas estreitas)" tabindex="0">
+          <!-- table: dados em linhas e colunas. caption-top põe o caption acima da tabela. -->
+          <table class="table table-sm align-middle caption-top">
+            <!-- caption: nome da tabela, anunciado antes dos dados. -->
+            <caption>Últimos e próximos jogos do Time da Casa</caption>
+            <thead>
+              <tr>
+                <!-- scope="col": o cabeçalho vale para a coluna. scope="row": vale para a linha. -->
+                <th scope="col">Data</th>
+                <th scope="col">Jogo</th>
+                <th scope="col">Local</th>
+                <th scope="col">Resultado</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <th scope="row"><time datetime="2026-09-27">27/09</time></th>
+                <td>Cidade Alta x Time da Casa</td>
+                <td>Arena Cidade Alta</td>
+                <td>Empate, 1 x 1</td>
+              </tr>
+              <tr>
+                <th scope="row"><time datetime="2026-10-04">04/10</time></th>
+                <td>Time da Casa x Vale FC</td>
+                <td>Estádio Municipal</td>
+                <td>Vitória, 2 x 0</td>
+              </tr>
+              <tr>
+                <th scope="row"><time datetime="2026-10-11">11/10</time></th>
+                <td>Serrana EC x Time da Casa</td>
+                <td>Arena Serra</td>
+                <td>A jogar</td>
+              </tr>
+              <tr>
+                <th scope="row"><time datetime="2026-10-18">18/10</time></th>
+                <td>Time da Casa x Litoral AC</td>
+                <td>Estádio Municipal</td>
+                <td>A jogar</td>
+              </tr>
+              <tr>
+                <th scope="row"><time datetime="2026-10-25">25/10</time></th>
+                <td>Planalto FC x Time da Casa</td>
+                <td>Campo do Planalto</td>
+                <td>A jogar</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+      <section id="classificacao" class="mb-5" aria-labelledby="titulo-classificacao">
+        <h2 id="titulo-classificacao" class="h3">Classificação</h2>
+        <div class="table-responsive" role="region"
+          aria-label="Tabela de classificação (rola na horizontal em telas estreitas)" tabindex="0">
+          <table class="table table-sm align-middle caption-top">
+            <caption>Classificação da temporada após 8 rodadas</caption>
+            <thead>
+              <tr>
+                <th scope="col">Pos.</th>
+                <th scope="col">Time</th>
+                <!-- As siglas P, J, V, E, D são explicadas na legenda abaixo da tabela. -->
+                <th scope="col">P</th>
+                <th scope="col">J</th>
+                <th scope="col">V</th>
+                <th scope="col">E</th>
+                <th scope="col">D</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td>1</td>
+                <th scope="row">Time da Casa</th>
+                <td>17</td>
+                <td>8</td>
+                <td>5</td>
+                <td>2</td>
+                <td>1</td>
+              </tr>
+              <tr>
+                <td>2</td>
+                <th scope="row">Vale FC</th>
+                <td>14</td>
+                <td>8</td>
+                <td>4</td>
+                <td>2</td>
+                <td>2</td>
+              </tr>
+              <tr>
+                <td>3</td>
+                <th scope="row">Serrana EC</th>
+                <td>12</td>
+                <td>8</td>
+                <td>3</td>
+                <td>3</td>
+                <td>2</td>
+              </tr>
+              <tr>
+                <td>4</td>
+                <th scope="row">Litoral AC</th>
+                <td>11</td>
+                <td>8</td>
+                <td>3</td>
+                <td>2</td>
+                <td>3</td>
+              </tr>
+              <tr>
+                <td>5</td>
+                <th scope="row">Planalto FC</th>
+                <td>8</td>
+                <td>8</td>
+                <td>2</td>
+                <td>2</td>
+                <td>4</td>
+              </tr>
+              <tr>
+                <td>6</td>
+                <th scope="row">Cidade Alta</th>
+                <td>4</td>
+                <td>8</td>
+                <td>1</td>
+                <td>1</td>
+                <td>6</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+        <p class="small">P: pontos. J: jogos. V: vitórias. E: empates. D: derrotas.</p>
+      </section>
+
+      <section id="contato" class="mb-5" aria-labelledby="titulo-contato">
+        <h2 id="titulo-contato" class="h3">Contato</h2>
+        <!-- Instrução antes do formulário, ligada a ele por aria-describedby. -->
+        <p id="contato-instrucao">Todos os campos são obrigatórios. Este formulário é uma demonstração e não envia
+          dados.</p>
+        <!-- form: agrupa os campos e permite envio com Enter. Sem JavaScript ainda (T07).
+             Ainda não há mensagem de erro própria nesta versão: só a validação nativa do navegador. -->
+        <form action="#contato" method="post" aria-describedby="contato-instrucao">
+          <div class="mb-3">
+            <!-- label + for/id: rótulo ligado ao campo. form-label e form-control só dão o visual do Bootstrap.
+                 required: validação nativa. autocomplete: o navegador sugere o valor. -->
+            <label class="form-label fw-bold" for="nome">Nome</label>
+            <input class="form-control" id="nome" name="nome" type="text" autocomplete="name" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold" for="email">E-mail</label>
+            <!-- type="email": valida o formato e mostra o teclado certo no celular. -->
+            <input class="form-control" id="email" name="email" type="email" autocomplete="email" required>
+          </div>
+          <div class="mb-3">
+            <label class="form-label fw-bold" for="mensagem">Mensagem</label>
+            <textarea class="form-control" id="mensagem" name="mensagem" rows="4" required></textarea>
+          </div>
+          <!-- btn btn-primary: usa as minhas variáveis --bs-btn-* (verde da marca). -->
+          <button class="btn btn-primary" type="submit">Enviar mensagem</button>
+          <!-- Abre o modal. data-bs-toggle="modal" e data-bs-target ligam o botão ao id do modal.
+               type="button": não envia o formulário. -->
+          <button class="btn btn-outline-secondary" type="button" data-bs-toggle="modal"
+            data-bs-target="#modal-envio">Revisar antes de enviar</button>
+          <!-- role="status": região viva e educada. Quando o texto mudar, o leitor de tela anuncia
+               sem mover o foco. Fica vazio até o JavaScript do T07. -->
+          <p id="contato-status" class="mt-3 mb-0" role="status"></p>
+        </form>
+      </section>
+
+      <!-- aside: conteúdo complementar ao principal. -->
+      <aside aria-labelledby="titulo-lateral">
+        <h2 id="titulo-lateral" class="h3">Em campo</h2>
+        <article class="card card-body">
+          <h3 class="h5">Próximo jogo</h3>
+          <p class="fw-bold mb-1">Serrana EC x Time da Casa</p>
+          <p class="mb-0"><time datetime="2026-10-11">11/10/2026</time>, Arena Serra</p>
+        </article>
+      </aside>
+
+    </div>
+  </main>
+
+  <!-- footer: créditos e licenças. bg-dark text-white text-center py-2: cores e espaço por utilities. m-0 zera a margem dos parágrafos. -->
+  <footer class="bg-dark text-white text-center py-2">
+    <p class="m-0">Projeto de Aula - 2026</p>
+    <p class="m-0">Conteúdo fictício. Textos e ilustrações autorais, licença CC BY 4.0. Bootstrap 5.3.8, licença MIT.
+    </p>
+  </footer>
+
+  <!-- Modal do Bootstrap. Fica no fim do body, fora do container, para o fundo escuro cobrir a página toda.
+       - id="modal-envio": o alvo do botão acima. Precisa ser único.
+       - tabindex="-1": permite focar o modal por código, sem entrar na ordem do Tab.
+       - aria-labelledby: o nome do diálogo é o título dentro dele.
+       - aria-hidden="true": começa escondido. O Bootstrap ajusta ao abrir.
+       - fade: animação de entrada. O Bootstrap já respeita prefers-reduced-motion.
+       - modal-fullscreen-sm-down: tela cheia abaixo de 576px, mais fácil de usar no celular.
+       O Bootstrap prende o foco dentro do modal, fecha com Esc e devolve o foco ao botão que abriu. -->
+  <div class="modal fade" id="modal-envio" tabindex="-1" aria-labelledby="titulo-modal-envio" aria-hidden="true">
+    <div class="modal-dialog modal-fullscreen-sm-down">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title fs-5" id="titulo-modal-envio">Revisar antes de enviar</h2>
+          <!-- Fechar: data-bs-dismiss="modal" fecha. aria-label nomeia o botão, que só tem um ícone. -->
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Fechar"></button>
+        </div>
+        <div class="modal-body">
+          <p class="mb-0">Confira nome, e-mail e mensagem. Este formulário é uma demonstração e não envia dados.</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Voltar ao formulário</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>
