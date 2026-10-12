@@ -82,17 +82,18 @@ Aqui eu registro o porquê. O que foi feito, com classes, larguras e medidas, es
 - Escolhi o modal "Revisar antes de enviar", no formulário. Já vem com alvo único, 'aria-labelledby', botão de fechar, Esc e foco devolvido.
 - Limite: hoje o modal só mostra um aviso. Ele não lê os campos do formulário. Isso fica para o T07.
 - Fica no fim do 'body', fora do 'container'.
+- Evidência: `docs/evidencias/t06-ids-unicos.png`, `t06-menu-767-aberto.png`, `t06-menu-768.png`, `t06-modal-aberto.png`, `t06-modal-foco-devolvido.png`, `t06-offline.png` e `t06-contraste-menu.png`.
 
 ## D-10: Verde fora das cores do Bootstrap (T06)
 
 - Contexto: o verde '#1b7e32' não existe nas cores do Bootstrap.
 - Decisão: uma classe própria ('.navbar-marca') com o verde, em vez de usar um 'bg-*' do framework.
-- Consequência: 2 regras próprias na F2, 580 bytes.
+- Consequência: 2 regras próprias na F2, 18 linhas, 587 bytes.
 - Origem: 'COMPATIBILIDADE.md', seção "CSS próprio e peso".
 
 ## D-11: Bootstrap contra CSS próprio (T06)
 
-- A F1 gasta 8.163 bytes de CSS próprio (61 regras). A F2 gasta 580 bytes (2 regras).
+- A F1 gasta 8.163 bytes de CSS próprio (61 regras). A F2 gasta 587 bytes (2 regras).
 - O Bootstrap custa 232.111 bytes de CSS e 80.496 de JS. A página F2 fica umas 18 vezes mais pesada que a F1 (cerca de 325 KB contra 18 KB).
 - Ganho: grade, menu recolhível, modal e estados prontos. Perda: peso e controle fino.
 - A comparação não é justa por linhas de CSS. A F2 também escreve menos CSS porque a F1 tem container query e tokens que o Bootstrap não oferece.
@@ -104,7 +105,7 @@ Aqui eu registro o porquê. O que foi feito, com classes, larguras e medidas, es
 - Comandos usados no lugar:
   - `git grep -n -i -E "(senha|password|secret|api[_-]?key)[\"']? *[:=]"`
   - `git log --all --name-only --pretty=format: | sort -u | grep -i -E "\.env|\.sql|\.zip|wp-config|\.pem"`
-- Resultado em 11/10/2026: nenhum segredo. O único achado do `git grep` foi `bootstrap.bundle.min.js.map` (nomes de código do Bootstrap). O segundo comando saiu vazio.
+- Resultado em 12/10/2026: nenhum segredo. O único achado do `git grep` foi `bootstrap.bundle.min.js.map` (nomes de código do Bootstrap). O segundo comando saiu vazio.
 - Os `.map` do Bootstrap ficam no repositório. São inofensivos e servem para depurar no DevTools.
 
 ## D-13: Imagem principal em SVG com srcset (T05)
@@ -116,11 +117,21 @@ Aqui eu registro o porquê. O que foi feito, com classes, larguras e medidas, es
 - Sem `loading="lazy"`: é a imagem principal (candidata a LCP) e leva `fetchpriority="high"`. A página não tem outra imagem abaixo da dobra.
 - Sem `picture`: não há recorte diferente por tamanho de tela.
 - Consequência: se as imagens virarem raster, só os arquivos mudam. O HTML continua igual.
+- Vale para as duas páginas: a F1 ('index.html') e a F2 ('bootstrap.html') usam os mesmos três SVG. Só o 'sizes' muda. Na F1 ele segue o padding de 2rem do destaque. Na F2 segue o container do Bootstrap: 1200px ou mais, 960px. 992px ou mais, 936px. 768px ou mais, 696px. 576px ou mais, 516px. Abaixo disso, a janela menos 1,5rem.
+
+## D-14: Contraste dos componentes do Bootstrap (T06)
+
+- Medi no DevTools os pares que o Bootstrap traz por padrão: links do menu, legenda das tabelas e badge de sucesso.
+- Passaram: links do menu 5,15:1, legenda 6,58:1 e badge 4,53:1 (por pouco).
+- Reprovou: 'btn-outline-secondary' ('#6c757d') sobre o 'bg-light' ('#f8f9fa'), 4,45:1. O DevTools não mostra a razão quando o fundo do botão é transparente, então calculei à mão.
+- Decisão: trocar por 'btn-outline-dark'. Mantém o contorno e não pede CSS próprio.
+- Consequência: a F2 continua com 2 regras próprias.
+- Origem: 'COMPATIBILIDADE.md', seção "Contraste conferido".
 
 ## Pendências conhecidas
 
 - O formulário ainda não tem JavaScript. Ele não envia dados, e o botão de envio não mostra resultado. Entra no T07.
-- Firefox, WebKit, celular real e zoom de 200% ainda não foram testados.
+- Firefox, WebKit e celular real ainda não foram testados. Entram no T11.
 - Em 160px de largura a F1 tem rolagem horizontal. O critério é 320px.
-- Faltam os prints de evidência das outras tarefas (T03 a T06) em `docs/evidencias/`. Os da T00 a T02 estão prontos.
+- Faltam os prints do T07 em diante. Os de T00 a T06 estão em `docs/evidencias/`.
 - O linter de HTML reclama de 'div role="region"' nas tabelas e do 'aria-hidden' do modal. Mantive os dois: seguem o padrão ensinado na A17 e na A14.
