@@ -59,11 +59,14 @@ Aqui eu registro o porquê. O que foi feito, com classes, larguras e medidas, es
 
 ## D-07: Movimento (T04)
 
-- Gradiente só no destaque, com 'background-color: #333' antes dele. O ponto mais claro é o verde, com 5,15:1 contra o texto branco.
-- 'transform' só no hover do cartão ('translateY(-.25rem)') e no clique do botão.
-- 'transition' por propriedade, 160ms. Nenhum 'transition: all'.
-- Com 'prefers-reduced-motion: reduce' a transição e o deslocamento saem. A borda e a cor continuam mudando.
-- Resultado do jogo em texto ("Vitória", "Empate", "A jogar"), não só cor.
+- Gradiente só no destaque, com `background-color: #333` antes dele.
+- Ponto mais claro do gradiente: verde `#1b7e32` com texto branco, 5,15:1 (medido no DevTools).
+- `transform` só no hover do cartão (`translateY(-.25rem)`) e no clique do botão.
+- `transition` por propriedade, 160ms. Nenhum `transition: all`.
+- Com `prefers-reduced-motion: reduce`, transição e deslocamento saem. Borda e cor continuam mudando.
+- Resultado do jogo em texto ("Vitória", "Empate", "Em andamento"), não só cor.
+- Evidência: `docs/evidencias/t04-reduced-motion-reduce.png`, `t04-computed-card.png`, `t04-reduced-motion-no-preference.png`.
+- Limite: a emulação do DevTools não é o ajuste real do sistema.
 
 ## D-08: Bootstrap 5.3.8 (T06)
 
