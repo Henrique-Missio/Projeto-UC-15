@@ -58,12 +58,12 @@ Testei as duas páginas nestas larguras: 320, 375, 575, 576, 767, 768, 769, 954,
 - F2, teclado: Enter abre e fecha o menu, e 'aria-expanded' muda. O modal abre, fecha com Esc e devolve o foco ao botão que abriu.
 - Imagem principal: o navegador escolheu 'estadio-480.svg' em 320 e 375px e 'estadio-960.svg' de 575px em diante. Não testei a de 1440px, que depende de tela com densidade 2x.
 - Em 160px de largura (zoom de 400% numa janela de 640px) a F1 ainda ganha 30px de rolagem horizontal.
+- Zoom de 200% e fonte ampliada: testados em navegador de verdade no T05 (ver 'TESTES.md', matriz de responsividade).
 
 Ainda não testei:
 
 - Firefox e WebKit.
 - Celular real e teclado virtual.
-- Zoom de 200% e fonte ampliada em navegador de verdade.
 - Jornada só por teclado na F1, inteira, com os olhos.
 
 Na versão anterior (F2 com Bootstrap 5.3.3) eu tinha testado 768, 954, 992 e 1200px.
@@ -73,7 +73,7 @@ Na versão anterior (F2 com Bootstrap 5.3.3) eu tinha testado 768, 954, 992 e 12
 Os números abaixo são desta versão. Não comparam com os da primeira entrega, que era só uma home de 10 minutos.
 
 - F1: 61 regras de CSS próprio, 422 linhas, 8.163 bytes (2.439 com gzip). Mais 3 blocos de '@media' e '@container'.
-- F2: 2 regras, 16 linhas, 580 bytes. Ficam num '<style>' dentro do 'bootstrap.html'.
+- F2: 2 regras, 18 linhas, 587 bytes (sem comentários nem linhas em branco). Ficam num '<style>' dentro do 'bootstrap.html'.
 - Bootstrap: CSS com 232.111 bytes (30.869 com gzip) e bundle JS com 80.496 bytes (23.743 com gzip).
 - Página F1, com HTML, CSS e a imagem de 480px: cerca de 18 KB.
 - Página F2, com HTML, CSS, JS e a imagem de 480px: cerca de 325 KB.
@@ -98,6 +98,11 @@ O navegador carrega o 'bootstrap.min.css' e o bundle inteiros, mesmo usando 72 c
 - Borda dos campos '#767676' sobre branco: 4,54:1.
 - Foco azul '#0b57d0' sobre branco: 6,39:1. Em fundo escuro o foco é branco.
 - A borda '#ddd' dos cartões tem 1,36:1. Deixei assim porque o cartão não é um controle.
+- Links do menu da F2 ('nav-link', branco sobre '#1b7e32'): 5,15:1. Medido no DevTools. O tema escuro do Bootstrap 5.3.8 mantém o link em branco pleno.
+- Legenda das tabelas da F2 ('caption'): 6,58:1. Medido no DevTools.
+- Badge 'text-bg-success' (branco sobre '#198754'): 4,53:1. Passa por pouco. Medido no DevTools.
+- Botão 'btn-outline-secondary' (cinza '#6c757d' sobre '#f8f9fa'): 4,45:1, calculado. Reprovou. Troquei por 'btn-outline-dark' ('#212529' sobre '#f8f9fa'), cerca de 14,6:1, calculado.
+- Botão 'btn-secondary' do modal (branco sobre '#6c757d'): 4,69:1, calculado.
 
 ## Diferenças para a F1
 
