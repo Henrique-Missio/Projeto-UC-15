@@ -48,7 +48,9 @@
       <p>Acompanhe aqui as novidades do seu time.</p>
       <!-- Imagem principal: está na primeira tela, então é a candidata a LCP.
            - src: arquivo padrão, usado se o navegador não entender srcset.
-           - srcset (descritores "w"): três arquivos, com a largura real de cada um.
+           - srcset (descritores "w"): três arquivos SVG, com a largura declarada de cada um.
+           SVG é vetor: o ganho de peso é pequeno. Aqui o srcset demonstra a técnica.
+           Com imagem raster (WebP/JPG), cada arquivo teria a largura real em pixels.
            - sizes: diz ao navegador quanto espaço a imagem ocupa. Com 42rem ou mais, 40rem.
              Abaixo disso, a largura da janela menos 2rem de padding.
              O navegador cruza sizes com a densidade da tela e escolhe um arquivo.
@@ -71,12 +73,7 @@
 
         <section id="noticias" aria-labelledby="titulo-noticias">
           <h2 id="titulo-noticias">Últimas Notícias</h2>
-
-          <!-- .slot: contêiner da container query. A ficha dentro dele muda de arranjo
-               conforme a largura do slot, não da janela. -->
-              <!-- .fichas: agrupa duas fichas de jogo lado a lado (Grid definido no CSS).
-                             Cada ficha continua dentro do próprio .slot, que é o contêiner da container query.
-                             Em tela estreita as fichas empilham, uma por linha. -->
+              
               <div class="fichas">
               
                 <!-- .slot 1: último resultado -->
@@ -99,7 +96,8 @@
                     <p class="ficha__meta"><span class="selo">Empate</span> <time datetime="2026-09-27">27/09/2026</time>,
                       Arena Cidade Alta</p>
                   </article>
-                </div>    </div>
+                </div>    
+              </div>
           <!-- Melhoria progressiva: a lista está completa sem JS. O filtro da T07 só esconde itens. -->
           <div class="grade-noticias">
             <!-- Um article por notícia. Cada um tem o seu h3. -->
@@ -157,19 +155,19 @@
                   <th scope="row"><time datetime="2026-10-11">11/10</time></th>
                   <td>Serrana EC x Time da Casa</td>
                   <td>Arena Serra</td>
-                  <td>A jogar</td>
+                  <td>Agendado</td>
                 </tr>
                 <tr>
                   <th scope="row"><time datetime="2026-10-18">18/10</time></th>
                   <td>Time da Casa x Litoral AC</td>
                   <td>Estádio Municipal</td>
-                  <td>A jogar</td>
+                  <td>Agendado</td>
                 </tr>
                 <tr>
                   <th scope="row"><time datetime="2026-10-25">25/10</time></th>
                   <td>Planalto FC x Time da Casa</td>
                   <td>Campo do Planalto</td>
-                  <td>A jogar</td>
+                  <td>Agendado</td>
                 </tr>
               </tbody>
             </table>
@@ -269,9 +267,11 @@
                    O rótulo é visível e fixo. Não uso placeholder no lugar dele. -->
               <label class="campo__rotulo" for="nome">Nome</label>
               <!-- required: validação nativa do navegador.
-                   autocomplete="name": o navegador sugere o nome.
-                   aria-describedby: liga o campo à mensagem de erro logo abaixo. -->
-              <input class="campo__controle" id="nome" name="nome" type="text" autocomplete="name" required>
+                    autocomplete="name": o navegador sugere o nome.
+                    O aria-describedby deste campo é ligado por JavaScript no T07, só quando
+                    o campo fica inválido (decisão D-03). Até lá, a mensagem de erro logo abaixo
+                    fica oculta. -->
+              <input class="campo__controle" id="nome" name="nome" type="text" autocomplete="name" required aria-describedby="nome-erro">
               <!-- A mensagem de erro existe no HTML, mas o CSS a esconde.
                    Ela aparece quando o campo fica inválido (:user-invalid).
                    "Erro:" em texto: o erro não depende só da cor vermelha. -->
@@ -280,14 +280,14 @@
             <div class="campo">
               <label class="campo__rotulo" for="email">E-mail</label>
               <!-- type="email": o navegador valida o formato e mostra o teclado certo no celular. -->
-              <input class="campo__controle" id="email" name="email" type="email" autocomplete="email" required>
+              <input class="campo__controle" id="email" name="email" type="email" autocomplete="email" required aria-describedby="email-erro">
               <p class="erro" id="email-erro" hidden><strong>Erro:</strong> informe um e-mail válido, como
                 nome@exemplo.com.
               </p>
             </div>
             <div class="campo">
               <label class="campo__rotulo" for="mensagem">Mensagem</label>
-              <textarea class="campo__controle" id="mensagem" name="mensagem" rows="4" required></textarea>
+              <textarea class="campo__controle" id="mensagem" name="mensagem" rows="4" required aria-describedby="mensagem-erro"></textarea>
               <p class="erro" id="mensagem-erro" hidden><strong>Erro:</strong> escreva uma mensagem.</p>
             </div>
             <!-- button type="submit": botão nativo. Funciona com Tab, Enter e Espaço sem código extra. -->
@@ -304,8 +304,9 @@
            e também na ordem visual no desktop. Nenhuma propriedade de ordem é usada. -->
       <aside class="lateral" aria-labelledby="titulo-lateral">
         <h2 id="titulo-lateral">Em campo</h2>
-        <!-- Mesmo componente "ficha" da seção de notícias, num slot mais estreito.
-             Aqui a container query o empilha. Na coluna principal ele fica lado a lado. -->
+        <!-- Mesmo componente "ficha" da seção de notícias, num slot estreito (18rem).
+                A container query (22rem) o mantém empilhado aqui. Na coluna principal o arranjo
+                depende da largura do slot: lado a lado só com 22rem ou mais. -->
         <div class="slot">
           <article class="ficha">
             <h3>Próximo jogo</h3>
