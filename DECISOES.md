@@ -30,7 +30,7 @@ Aqui eu registro o porquê. O que foi feito, com classes, larguras e medidas, es
 - Unidades:
   - 'rem' para a escala de espaço e de texto;
   - 'em' no padding dos botões e das células, que acompanha a fonte do próprio componente;
-    - `px` só no `:root`: borda de 1px (`--borda`) e os tokens `--espessura-borda` (2px) e `--espessura-foco` (3px). Exceção justificada: a WCAG 2.2 pede foco visível e espesso, e isso não é tamanho de texto. O `outline-offset` e o `translateY` ficaram em `rem`;
+  - `px` só no `:root`: borda de 1px (`--borda`) e os tokens `--espessura-borda` (2px) e `--espessura-foco` (3px). Exceção justificada: a WCAG 2.2 pede foco visível e espesso, e isso não é tamanho de texto. O `outline-offset` e o `translateY` ficaram em `rem`;
   - 'ch' no limite de 65 caracteres dos parágrafos;
   - 'clamp(2rem, 1.5rem + 2vw, 3.5rem)' no 'h1', com piso de 2rem como fallback.
 - O que eu converti: 10px e 15px viraram 1rem, 20px virou 1rem na horizontal e 1.5rem na vertical, 40px virou 2.5rem, 800px virou 70rem.
@@ -52,19 +52,19 @@ Aqui eu registro o porquê. O que foi feito, com classes, larguras e medidas, es
 - Notícias: 'repeat(auto-fit, minmax(min(100%, 14rem), 1fr))'. Não precisa de breakpoint.
 - Tabelas: rolagem horizontal só dentro do 'div' que as envolve. Esse 'div' recebe foco por teclado e tem nome.
 - Breakpoint em 56rem. Motivo: a barra lateral de 18rem só entra quando a coluna principal ainda comporta dois cartões de 14rem. Efeito colateral: entre 896px e cerca de 1064px os cartões passam de 3 para 2 colunas.
-- A ficha de jogo usa container query ('container: ficha / inline-size', 'min-width: 22rem'). Duas fichas lado a lado na coluna (.fichas, Grid auto-fit). Mesma janela, dois arranjos: empilhada na lateral, lado a lado na coluna.
+- A ficha de jogo usa container query ('container: ficha / inline-size', 'min-width: 22rem'). A grade `.fichas` (Grid auto-fit, mínimo 16rem) põe até duas fichas por linha. O arranjo de cada ficha depende da largura do slot, não da janela: empilhada abaixo de 22rem, times lado a lado a partir de 22rem. Na lateral (18rem) fica sempre empilhada. Na coluna principal, lado a lado em janelas de 384 a 559px, 752 a 895px e a partir de 1080px (raiz de 16px; valores calculados, conferir no DevTools).
 - Origem: 'COMPATIBILIDADE.md', seção "Larguras testadas".
 - Testes T03 (320px): sem rolagem horizontal da página (`scrollWidth <= clientWidth`) com palavra longa em título e na ficha, lista vazia e 20 cards. Tab segue a ordem visual. Evidência: `docs/evidencias/t03-320px-sem-overflow.png`, `t03-texto-longo.png` e `t03-20-itens.png`.
-- Palavras longas: `overflow-wrap: anywhere` e `min-inline-size: 0` nos títulos, nos cards e na ficha. Na ficha, as colunas usam `minmax(0, 1fr)`.
+- Palavras longas: `overflow-wrap: anywhere` e `min-inline-size: 0` nos títulos, nos cards e na ficha. Na ficha, dentro da container query, as colunas usam `minmax(0, auto) auto minmax(0, auto)`: nome longo encolhe até 0 em vez de estourar.
 
 ## D-07: Movimento (T04)
 
 - Gradiente só no destaque, com `background-color: #333` antes dele.
 - Ponto mais claro do gradiente: verde `#1b7e32` com texto branco, 5,15:1 (medido no DevTools).
-- `transform` só no hover do cartão (`translateY(-.25rem)`) e no clique do botão.
+- `transform` só em três lugares: hover do cartão (`translateY(-.25rem)`), clique do botão (`translateY(.125rem)`) e clique dos links do menu (1px, `translateY(.0625rem)`).
 - `transition` por propriedade, 160ms. Nenhum `transition: all`.
 - Com `prefers-reduced-motion: reduce`, transição e deslocamento saem. Borda e cor continuam mudando.
-- Resultado do jogo em texto ("Vitória", "Empate", "Em andamento"), não só cor.
+- Resultado do jogo em texto ("Vitória", "Empate", "Agendado" para jogo futuro), não só cor.
 - Evidência: `docs/evidencias/t04-reduced-motion-reduce.png`, `t04-computed-card.png`, `t04-reduced-motion-no-preference.png`.
 - Limite: a emulação do DevTools não é o ajuste real do sistema.
 
@@ -106,6 +106,16 @@ Aqui eu registro o porquê. O que foi feito, com classes, larguras e medidas, es
   - `git log --all --name-only --pretty=format: | sort -u | grep -i -E "\.env|\.sql|\.zip|wp-config|\.pem"`
 - Resultado em 11/10/2026: nenhum segredo. O único achado do `git grep` foi `bootstrap.bundle.min.js.map` (nomes de código do Bootstrap). O segundo comando saiu vazio.
 - Os `.map` do Bootstrap ficam no repositório. São inofensivos e servem para depurar no DevTools.
+
+## D-13: Imagem principal em SVG com srcset (T05)
+
+- Contexto: a SPEC pede `srcset` e `sizes` coerentes com o slot. As imagens do projeto são SVG (`estadio-480.svg`, `estadio-960.svg`, `estadio-1440.svg`).
+- Decisão: manter SVG e usar `srcset` com descritores `w` mesmo assim.
+- Motivo: SVG é vetor e escala sem perda, então o ganho de peso é pequeno. O `srcset` demonstra a técnica. Com imagem raster (WebP ou JPG), cada arquivo teria a largura real em pixels.
+- `sizes="(min-width: 42rem) 40rem, calc(100vw - 2rem)"`: 40rem é o `max-inline-size` da imagem e 2rem é o padding horizontal do destaque. O ponto 42rem é 40rem mais 2rem.
+- Sem `loading="lazy"`: é a imagem principal (candidata a LCP) e leva `fetchpriority="high"`. A página não tem outra imagem abaixo da dobra.
+- Sem `picture`: não há recorte diferente por tamanho de tela.
+- Consequência: se as imagens virarem raster, só os arquivos mudam. O HTML continua igual.
 
 ## Pendências conhecidas
 
