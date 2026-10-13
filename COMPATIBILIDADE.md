@@ -127,6 +127,20 @@ O navegador carrega o 'bootstrap.min.css' e o bundle inteiros, mesmo usando 80 c
 
 **Carregamento.** Nos dois arquivos o `main.js` entra como `type="module"`. Na F2 ele vem depois do `bootstrap.bundle` (que usa `defer`). Os módulos de busca, favoritos, trilho e menu saem sozinhos quando não encontram seus elementos, então não geram erro no console.
 
+## jQuery na F2 (T08)
+
+Só a F2 usa jQuery. A F1 não carrega o jQuery e não mudou.
+
+- Versão: jQuery 4.0.0, build completo, local em 'prototipo/assets/vendor/jquery-4.0.0/' ('jquery.min.js' e 'LICENSE.txt', MIT). Carrego com 'defer', antes do meu script. Não há CDN.
+- Meu código fica em 'prototipo/js/jquery-favoritos.js', como script comum, não como módulo. Só a F2 o carrega.
+- Uso o jQuery só para um contador: "Favoritos: N", dentro da seção de notícias. O número é o 'span' com 'data-total-favoritos'.
+- O jQuery não alterna o favorito. Quem alterna é o 'favoritos.js' nativo, que as duas páginas carregam pelo 'main.js'. O jQuery só lê o 'aria-pressed' e conta. Fiz assim para o clique não ser tratado duas vezes.
+- A F2 agora tem dois contadores de favoritos. O do menu é nativo ('data-contador-favoritos'). O da seção é do jQuery.
+- Sem JavaScript, o parágrafo do contador fica escondido (classe 'so-com-js'), como o resto dos favoritos.
+- Peso: o jQuery acrescenta 78.748 bytes (27.443 com gzip) e o meu script, 2.956 bytes (1.452 com gzip). A página da F2 deixa de ter os [376] KB medidos antes. Preciso refazer a medida.
+- Contagem: passo a ter 8 arquivos próprios em 'prototipo/js/'. Sete são módulos nas duas páginas. 'jquery-favoritos.js' é só da F2.
+- Não testei ainda: Firefox, WebKit e celular real com o jQuery.
+
 ## Diferenças para a F1
 
 - A F1 limita o conteúdo a 70rem, com a barra lateral de 18rem a partir de 56rem. Na F2 a largura segue o 'container' do Bootstrap (720, 960, 1140 ou 1320px) e não existe barra lateral. A ficha do próximo jogo fica no fim da página.
