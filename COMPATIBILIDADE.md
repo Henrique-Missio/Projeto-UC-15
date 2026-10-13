@@ -22,6 +22,8 @@ As duas versões têm a mesma estrutura:
 - "Contato", com o formulário;
 - "Em campo", com a ficha do próximo jogo;
 - rodapé.
+- F1 não tem Home no menu.
+- As duas tem Notícias favoritas e Lances da rodada.
 
 Os títulos seguem 'h1' > 'h2' > 'h3', sem pular nível. Todos os links apontam para um destino que existe. Não sobrou nenhum 'href="#"'.
 
@@ -70,23 +72,28 @@ Na versão anterior (F2 com Bootstrap 5.3.3) eu tinha testado 768, 954, 992 e 12
 
 ## CSS próprio e peso
 
-Os números abaixo são desta versão. Não comparam com os da primeira entrega, que era só uma home de 10 minutos.
+Os números abaixo são desta versão, depois da T07. Medi o CSS sem comentários e sem linhas em branco. Não comparam com os da primeira entrega, que era só uma home de 10 minutos.
 
-- F1: 61 regras de CSS próprio, 422 linhas, 8.163 bytes (2.439 com gzip). Mais 3 blocos de '@media' e '@container'.
-- F2: 2 regras, 18 linhas, 587 bytes (sem comentários nem linhas em branco). Ficam num '<style>' dentro do 'bootstrap.html'.
+- F1: 104 regras de CSS próprio, 567 linhas, 12.461 bytes (2.764 com gzip). Mais 5 blocos de '@media' e '@container'.
+- F2: 13 regras, 75 linhas, 2.173 bytes (715 com gzip). Ficam num '<style>' dentro do 'bootstrap.html'. Não há '@media' nem '@container'.
 - Bootstrap: CSS com 232.111 bytes (30.869 com gzip) e bundle JS com 80.496 bytes (23.743 com gzip).
-- Página F1, com HTML, CSS e a imagem de 480px: cerca de 18 KB.
-- Página F2, com HTML, CSS, JS e a imagem de 480px: cerca de 325 KB.
+- JavaScript próprio: 7 arquivos em 'prototipo/js/', carregados como módulos nas duas páginas.
+- Página F1, com HTML, CSS, JS e a imagem de 480px: [84,6] KB transferidos, cache desligado.
+- Página F2, com HTML, CSS, JS e a imagem de 480px: [376] KB transferidos, cache desligado.
+- A F2 usa 80 classes diferentes do Bootstrap, mais 7 minhas: 'navbar-marca', 'marca-futnoticias', 'btn-favorito', 'so-com-js', 'trilho', 'trilho__faixa' e 'trilho__item'. Antes da T07 eram 72 do Bootstrap e 2 minhas.
 
-As duas regras da F2:
+As 13 regras da F2 são:
 
-'.navbar-marca { background-color: #1b7e32; }'
+- 'navbar-marca': o verde '#1b7e32' não existe nas cores do Bootstrap.
+- 'btn-primary' com escopo: troca as variáveis '--bs-btn-*' do botão primário.
+- 'aria-invalid' do campo: aponta para '--bs-form-invalid-border-color'.
+- Modo sem JavaScript: esconde busca, favoritos e trilho.
+- Botão favorito: o ícone ☆/★ e o estado pressionado, por variáveis '--bs-btn-*'. São 3 regras.
+- Trilho: o layout, a faixa, o item, o estado de arraste, o foco e o botão 'aria-disabled'. São 6 regras. O Bootstrap não tem 'scroll-snap' nem arraste.
 
-'.marca-futnoticias .btn-primary { --bs-btn-*: ... }'
+Nenhuma usa '!important' e nenhuma edita o arquivo minificado.
 
-A primeira continua própria porque o verde '#1b7e32' não existe nas cores do Bootstrap. A segunda troca as variáveis do botão primário por escopo, sem '!important' e sem editar o arquivo minificado.
-
-O navegador carrega o 'bootstrap.min.css' e o bundle inteiros, mesmo usando 72 classes. Meu CSS da F2 é minúsculo, mas a página ficou umas 18 vezes mais pesada que a F1. A F2 ganhou menu recolhível, modal e grade pronta. A F1 ganhou controle e peso.
+O navegador carrega o 'bootstrap.min.css' e o bundle inteiros, mesmo usando 80 classes. A F2 ganhou menu recolhível, modal e grade pronta. A F1 ganhou controle e peso menor. O CSS do trilho existe nas duas páginas, porque o Bootstrap não traz um equivalente.
 
 ## Contraste conferido
 
@@ -104,6 +111,22 @@ O navegador carrega o 'bootstrap.min.css' e o bundle inteiros, mesmo usando 72 c
 - Botão 'btn-outline-secondary' (cinza '#6c757d' sobre '#f8f9fa'): 4,45:1, calculado. Reprovou. Troquei por 'btn-outline-dark' ('#212529' sobre '#f8f9fa'), cerca de 14,6:1, calculado.
 - Botão 'btn-secondary' do modal (branco sobre '#6c757d'): 4,69:1, calculado.
 
+## JavaScript: diferenças entre F1 e F2 (T07)
+
+**Menu na F1.** Escrevi o menu com JavaScript nativo (`menu.js`): um botão hambúrguer com `aria-expanded` e `aria-controls`. O Esc fecha o menu e devolve o foco ao botão. Sem JavaScript, o botão fica escondido e a lista de links fica sempre visível, então a navegação funciona.
+
+**Menu na F2.** Usei o componente `navbar` do Bootstrap, com `collapse`. Ele depende do `bootstrap.bundle.min.js`. Sem JavaScript, abaixo de 768px o menu fica recolhido e o botão não abre nada, então os links ficam inacessíveis. Aceito essa limitação e a registro como diferença real entre as duas versões.
+
+**Formulário.** Os dois arquivos usam o mesmo `formulario.js` e os mesmos ids (`form-contato`, `<campo>-erro`, `contato-status`). Na F1 o erro tem estilo próprio, por `aria-invalid` e `:user-invalid`. Na F2 uso as classes `text-danger` e `small` e uma regra local para `aria-invalid`, que lê a variável `--bs-form-invalid-border-color` do Bootstrap. Sem JavaScript, as duas versões usam a validação nativa do navegador.
+
+**Busca, favoritos e trilho.** Os três existem nas duas versões e usam os mesmos módulos JavaScript ('filtro.js', 'favoritos.js', 'trilho.js'). Na F2 troquei as classes próprias por classes do Bootstrap ('form-control', 'alert', 'btn', 'visually-hidden', 'img-fluid'). O Bootstrap não tem 'scroll-snap' nem estilo para 'aria-pressed', então o trilho e o botão de favorito pressionado têm CSS local no '<style>', por variáveis '--bs-btn-*'.
+
+**Modal na F2.** O botão "Revisar antes de enviar" abre o modal do Bootstrap. Ele também depende do `bootstrap.bundle`. Sem JavaScript, o botão não faz nada. Não o escondi, porque a classe `js` vem do meu `main.js` e o modal depende de outro script.
+
+**Erro 404 ao enviar.** Na F2 o formulário tinha `method="post"` e devolvia 404 numa página estática. Removi o `method`. O `formulario.js` cancela o envio com `preventDefault`, e nenhuma requisição sai.
+
+**Carregamento.** Nos dois arquivos o `main.js` entra como `type="module"`. Na F2 ele vem depois do `bootstrap.bundle` (que usa `defer`). Os módulos de busca, favoritos, trilho e menu saem sozinhos quando não encontram seus elementos, então não geram erro no console.
+
 ## Diferenças para a F1
 
 - A F1 limita o conteúdo a 70rem, com a barra lateral de 18rem a partir de 56rem. Na F2 a largura segue o 'container' do Bootstrap (720, 960, 1140 ou 1320px) e não existe barra lateral. A ficha do próximo jogo fica no fim da página.
@@ -114,7 +137,7 @@ O navegador carrega o 'bootstrap.min.css' e o bundle inteiros, mesmo usando 72 c
 - A borda dos cartões da F1 é '#ddd'. Na F2 é a borda padrão do 'card'.
 - A fonte da F1 é 'system-ui', definida por mim. Na F2 é a pilha do Bootstrap.
 - O título da F1 usa 'clamp()' com piso de 2rem e teto de 3,5rem. Na F2 o 'h1' usa a classe 'h2' do Bootstrap, que tem a escala própria dele.
-- O formulário da F1 mostra mensagem de erro própria, com a palavra "Erro" no HTML. Na F2 ainda não tem mensagem de erro, só a validação nativa do navegador. Isso entra no T07.
+- O formulário das duas versões mostra a mensagem de erro com a palavra "Erro", ligada pelo 'formulario.js'. Na F1 o estilo é meu. Na F2 uso 'text-danger' e uma regra local para 'aria-invalid'.
 - O movimento reduzido na F1 é tratado por mim. Na F2 vem do CSS do Bootstrap.
-- Só a F2 tem menu recolhível e modal.
+- As duas têm menu recolhível: na F1 feito por mim, na F2 pelo Bootstrap. Só a F2 tem modal.
 - Os títulos e as margens da F2 seguem o reboot do Bootstrap.

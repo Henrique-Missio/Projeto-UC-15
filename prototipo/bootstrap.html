@@ -12,15 +12,108 @@
   <!-- Minhas duas regras próprias. -->
   <style>
     /* Verde da marca (já existia). */
-   .navbar-marca {
-     background-color: #1b7e32;
-   }
+    .navbar-marca {
+      background-color: #1b7e32;
+    }
 
     /* Cada componente do Bootstrap lê variáveis locais próprias. O botão lê as --bs-btn-*.
        Troco os valores dentro de um escopo. Não edito o arquivo minificado.
        Especificidade 0-2-0: ganha de ".btn-primary" (0-1-0) só dentro de .marca-futnoticias.
        Cada estado tem o seu grupo de variáveis. Se eu trocasse só o fundo normal,
        o hover, o clique e o foco ficariam com a cor antiga do Bootstrap. */
+    /* ===== T07: estilos locais da F2 =====
+       Só o que o Bootstrap não traz. Customização por variáveis --bs-btn-*, sem !important,
+       sem editar o minificado. O Bootstrap já tem [hidden]{display:none!important}. */
+
+    /* SEM JAVASCRIPT: esconde o que só funciona com JS (melhoria progressiva).
+       A classe "js" é posta no <html> pelo main.js; html:not(.js) = JS ausente.
+       .so-com-js: itens inteiros (contador, link e seção de favoritos). */
+    html:not(.js) [role="search"],
+    html:not(.js) .btn-favorito,
+    html:not(.js) [data-trilho],
+    html:not(.js) .so-com-js {
+      display: none;
+    }
+
+    /* Favorito: estado por texto/ícone, não só cor. O Bootstrap só estiliza .active, e o JS
+       alterna aria-pressed. O ::before é decorativo; o estado real é o aria-pressed.
+       Quando pressionado, o botão fica preenchido (variáveis do Bootstrap). */
+    .marca-futnoticias .btn-favorito::before {
+      content: '☆ ';
+    }
+
+    .marca-futnoticias .btn-favorito[aria-pressed="true"]::before {
+      content: '★ ';
+    }
+
+    .marca-futnoticias .btn-favorito[aria-pressed="true"] {
+      --bs-btn-color: #fff;
+      --bs-btn-bg: #212529;
+      --bs-btn-border-color: #212529;
+      --bs-btn-hover-color: #fff;
+      --bs-btn-hover-bg: #424649;
+      --bs-btn-hover-border-color: #424649;
+    }
+
+    /* Trilho: GRID de 2 colunas. A faixa ocupa a linha de cima e os botões ficam embaixo,
+       lado a lado. max-inline-size 30rem = 480px, o tamanho do arquivo de imagem.
+       minmax(0, 1fr): a coluna pode encolher. */
+    .trilho {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 1rem;
+      max-inline-size: 30rem;
+    }
+
+    /* Faixa rolável (FLEXBOX em linha): cada item tem a largura da faixa, uma imagem por vez.
+       overflow-x: auto = a rolagem horizontal fica SÓ aqui dentro.
+       scroll-snap-type: x mandatory = para alinhado num item.
+       touch-action: pan-y pinch-zoom = o arraste horizontal chega ao trilho.js (Pointer Events). */
+    .trilho__faixa {
+      display: flex;
+      grid-column: 1 / -1;
+      gap: 1rem;
+      min-inline-size: 0;
+      overflow-x: auto;
+      scroll-snap-type: x mandatory;
+      touch-action: pan-y pinch-zoom;
+    }
+
+    .trilho__item {
+      flex: 0 0 100%;
+      scroll-snap-align: start;
+      margin: 0;
+    }
+
+    /* Durante o arraste o snap sai, senão ele disputa com o dedo. */
+    .trilho__faixa.is-arrastando {
+      scroll-snap-type: none;
+      cursor: grabbing;
+      user-select: none;
+    }
+
+    /* Foco por teclado na faixa: o anel nunca é removido. */
+    .trilho__faixa:focus-visible {
+      outline: 0.1875rem solid var(--bs-body-color);
+      outline-offset: 0.125rem;
+    }
+
+    /* Botão na ponta: aria-disabled (e não disabled) para o foco não se perder.
+       Usa a opacidade de desabilitado do próprio Bootstrap. */
+    [data-trilho][aria-disabled="true"] {
+      opacity: var(--bs-btn-disabled-opacity);
+      cursor: not-allowed;
+    }
+
+    /* Campo inválido (T07). O formulario.js marca aria-invalid="true" no envio.
+       O Bootstrap só estiliza .is-invalid, então aponto o aria-invalid para a variável
+       dele (--bs-form-invalid-border-color). Sem !important. Borda mais grossa: o erro não
+       depende só da cor, e a mensagem "Erro:" aparece em texto abaixo do campo. */
+    .marca-futnoticias .form-control[aria-invalid="true"] {
+      border-color: var(--bs-form-invalid-border-color);
+      border-width: 0.125rem;
+    }
+
     .marca-futnoticias .btn-primary {
       /* Estado normal. */
       --bs-btn-color: #fff;
@@ -45,6 +138,10 @@
   <!-- JavaScript do Bootstrap (já inclui o Popper). Faz o menu recolher e o modal abrir.
        defer: baixa em paralelo e só roda depois de o HTML estar pronto. Não bloqueia a leitura da página. -->
   <script defer src="assets/vendor/bootstrap-5.3.8/bootstrap.bundle.min.js"></script>
+  <!-- JavaScript da T07. Aqui só o formulario.js tem efeito: o menu é do Bootstrap e a página
+       não tem os ids de busca, favoritos e trilho (esses módulos saem sozinhos, sem erro).
+       type="module": adiado sozinho, roda depois do HTML pronto. Exige servidor http://. -->
+  <script type="module" src="js/main.js"></script>
 </head>
 <!-- Classes do body:
      - marca-futnoticias: escopo da customização do botão (ver o bloco de estilo acima).
@@ -82,6 +179,10 @@
             <!-- aria-current="page" marca o item atual. A classe active só muda o visual. -->
             <li class="nav-item"><a class="nav-link active" href="#inicio" aria-current="page">Home</a></li>
             <li class="nav-item"><a class="nav-link" href="#noticias">Notícias</a></li>
+            <!-- so-com-js: sem JavaScript não há favoritos; a regra html:not(.js) no <style> esconde o item.
+                 O número é atualizado pelo favoritos.js (data-contador-favoritos). -->
+            <li class="nav-item so-com-js"><a class="nav-link" href="#favoritos">Favoritos (<span
+                  data-contador-favoritos>0</span>)</a></li>
             <li class="nav-item"><a class="nav-link" href="#calendario">Calendário</a></li>
             <li class="nav-item"><a class="nav-link" href="#classificacao">Classificação</a></li>
             <li class="nav-item"><a class="nav-link" href="#contato">Contato</a></li>
@@ -137,32 +238,126 @@
               datetime="2026-10-04">04/10/2026</time>, Estádio Municipal</p>
         </article>
 
+        <!-- BUSCA (T07). role="search": região de busca para leitor de tela.
+             form-label e form-control: classes do Bootstrap para rótulo e campo.
+             Sem JS o campo some (regra html:not(.js) no <style>) e a lista fica completa. -->
+        <form role="search" class="mb-3">
+          <label class="form-label fw-bold" for="busca">Buscar notícias</label>
+          <input class="form-control" id="busca" name="busca" type="search" autocomplete="off">
+        </form>
+        <!-- role="status": o filtro.js escreve "N resultados" e o leitor de tela anuncia.
+             visually-hidden: utilitário do Bootstrap, some da tela e continua para o leitor de tela. -->
+        <p id="status-busca" class="visually-hidden" role="status"></p>
+        <!-- Estado vazio: o hidden é removido pelo filtro.js quando nenhuma notícia casa. -->
+        <p id="busca-vazia" hidden>Nenhuma notícia encontrada. Tente outro termo.</p>
+
+        <!-- CONSENTIMENTO: favoritos só vão para o localStorage se a pessoa aceitar.
+             alert alert-secondary: caixa de aviso do Bootstrap. hidden: o favoritos.js mostra só se ainda não houve decisão. -->
+        <div id="aviso-consentimento" class="alert alert-secondary" role="region"
+          aria-label="Salvar favoritos neste aparelho" hidden>
+          <p>Posso salvar seus favoritos neste aparelho?</p>
+          <button class="btn btn-primary me-2" type="button" data-consentimento="aceitar">Aceitar</button>
+          <button class="btn btn-outline-dark" type="button" data-consentimento="recusar">Recusar</button>
+        </div>
+        <!-- so-com-js: escondido quando o JavaScript não roda (o contador depende dele). -->
+        <p class="so-com-js">Favoritos: <span data-contador-favoritos>0</span></p>
+
         <!-- Grade do Bootstrap (Flexbox por baixo): row é a linha, col-* são as colunas.
              g-3 dá o espaço entre cartões (gutter).
              col-12: um cartão por linha na base. col-md-6: dois por linha a partir de 768px.
              col-lg-4: três por linha a partir de 992px. -->
-        <div class="row g-3">
+        <!-- id="lista-noticias": gancho do JS. O filtro percorre os filhos diretos (um article por notícia)
+             e o favoritos.js ouve o clique aqui (delegação). -->
+        <div class="row g-3" id="lista-noticias">
           <!-- Cada notícia é um article, filho direto da row. O card fica dentro dele.
                h-100 iguala a altura dos cartões da mesma linha. -->
-          <article class="col-12 col-md-6 col-lg-4">
+          <!-- id="noticia-n1": destino do link da seção "Notícias favoritas". -->
+          <article class="col-12 col-md-6 col-lg-4" id="noticia-n1">
             <div class="card p-3 h-100">
               <h3 class="h5">Resultado do Fim de Semana</h3>
               <p><span class="badge text-bg-success">Vitória</span></p>
               <p class="mb-0">O time da casa venceu por 2x0 no clássico regional.</p>
+              <!-- O .card do Bootstrap já é coluna flex. mt-auto empurra o botão para o fundo do card
+                   (alinhado nos três); pt-3 dá o espaço acima. data-favorito = id da notícia.
+                   aria-pressed = estado. Rótulo fixo: o estado vai no ARIA e o ícone ☆/★ vem do <style>. -->
+              <div class="mt-auto pt-3">
+                <button class="btn btn-outline-dark btn-favorito" type="button" data-favorito="n1"
+                  aria-pressed="false">Favoritar</button>
+              </div>
             </div>
           </article>
-          <article class="col-12 col-md-6 col-lg-4">
+          <!-- id="noticia-n2": destino do link da seção "Notícias favoritas". -->
+          <article class="col-12 col-md-6 col-lg-4" id="noticia-n2">
             <div class="card p-3 h-100">
               <h3 class="h5">Novo Reforço</h3>
               <p class="mb-0">A equipe anunciou a contratação do novo atacante para a temporada.</p>
+              <!-- O .card do Bootstrap já é coluna flex. mt-auto empurra o botão para o fundo do card
+                   (alinhado nos três); pt-3 dá o espaço acima. data-favorito = id da notícia.
+                   aria-pressed = estado. Rótulo fixo: o estado vai no ARIA e o ícone ☆/★ vem do <style>. -->
+              <div class="mt-auto pt-3">
+                <button class="btn btn-outline-dark btn-favorito" type="button" data-favorito="n2"
+                  aria-pressed="false">Favoritar</button>
+              </div>
             </div>
           </article>
-          <article class="col-12 col-md-6 col-lg-4">
+          <!-- id="noticia-n3": destino do link da seção "Notícias favoritas". -->
+          <article class="col-12 col-md-6 col-lg-4" id="noticia-n3">
             <div class="card p-3 h-100">
               <h3 class="h5">Treino aberto</h3>
               <p class="mb-0">A torcida pode acompanhar o treino aberto na quinta-feira, antes do próximo jogo.</p>
+              <!-- O .card do Bootstrap já é coluna flex. mt-auto empurra o botão para o fundo do card
+                   (alinhado nos três); pt-3 dá o espaço acima. data-favorito = id da notícia.
+                   aria-pressed = estado. Rótulo fixo: o estado vai no ARIA e o ícone ☆/★ vem do <style>. -->
+              <div class="mt-auto pt-3">
+                <button class="btn btn-outline-dark btn-favorito" type="button" data-favorito="n3"
+                  aria-pressed="false">Favoritar</button>
+              </div>
             </div>
           </article>
+        </div>
+      </section>
+
+      <!-- NOTÍCIAS FAVORITAS (T07). Destino do link "Favoritos" do menu.
+           O favoritos.js monta a lista: um link por favorito, apontando para o card original.
+           so-com-js: sem JS não existe botão Favoritar, então a seção inteira fica escondida. -->
+      <section id="favoritos" class="mb-5 so-com-js" aria-labelledby="titulo-favoritos">
+        <h2 id="titulo-favoritos" class="h3">Notícias favoritas</h2>
+        <p id="favoritos-vazio">Você ainda não favoritou nenhuma notícia. Use o botão "Favoritar" nas notícias.</p>
+        <ul id="lista-favoritos"></ul>
+      </section>
+
+      <!-- TRILHO / GALERIA (T07). O Bootstrap não tem scroll-snap nem arraste, então o layout do trilho
+           é CSS local no <style>. Navegação: botões Anterior/Próximo, setas do teclado (a faixa recebe
+           foco) e arraste (Pointer Events no trilho.js). Os botões são a alternativa ao arraste (WCAG 2.2). -->
+      <section id="lances" class="mb-5" aria-labelledby="titulo-lances">
+        <h2 id="titulo-lances" class="h3">Lances da rodada</h2>
+        <div class="trilho">
+          <!-- Faixa rolável. tabindex="0": entra na ordem do Tab para rolar com as setas.
+               role="region" + aria-label: dá nome à área. -->
+          <div class="trilho__faixa" id="trilho-faixa" tabindex="0" role="region" aria-label="Galeria de lances">
+            <!-- Imagens de exemplo (a mesma ilustração). Troque pelas reais.
+                 img-fluid: utilitário do Bootstrap (max-width 100%, height auto). width/height reservam espaço (evita CLS).
+                 loading="lazy": ficam abaixo da primeira tela. figcaption: legenda de cada lance. -->
+            <figure class="trilho__item">
+              <img class="img-fluid" src="assets/img/estadio-480.svg" width="480" height="320" loading="lazy"
+                alt="Ilustração de um estádio de futebol visto de cima, com o campo listrado em verde">
+              <figcaption>Lance 1: chute de fora da área</figcaption>
+            </figure>
+            <figure class="trilho__item">
+              <img class="img-fluid" src="assets/img/estadio-480.svg" width="480" height="320" loading="lazy"
+                alt="Ilustração de um estádio de futebol visto de cima, com o campo listrado em verde">
+              <figcaption>Lance 2: defesa no último minuto</figcaption>
+            </figure>
+            <figure class="trilho__item">
+              <img class="img-fluid" src="assets/img/estadio-480.svg" width="480" height="320" loading="lazy"
+                alt="Ilustração de um estádio de futebol visto de cima, com o campo listrado em verde">
+              <figcaption>Lance 3: gol de cabeça</figcaption>
+            </figure>
+          </div>
+          <!-- Botões depois da faixa: a ordem do Tab (faixa, Anterior, Próximo) é a ordem visual.
+               aria-disabled (e não disabled): o foco não se perde quando o botão chega à ponta. -->
+          <button class="btn btn-primary" type="button" data-trilho="anterior" aria-disabled="true">Anterior</button>
+          <button class="btn btn-primary" type="button" data-trilho="proximo">Próximo</button>
         </div>
       </section>
 
@@ -305,23 +500,34 @@
         <!-- Instrução antes do formulário, ligada a ele por aria-describedby. -->
         <p id="contato-instrucao">Todos os campos são obrigatórios. Este formulário é uma demonstração e não envia
           dados.</p>
-        <!-- form: agrupa os campos e permite envio com Enter. Sem JavaScript ainda (T07).
-             Ainda não há mensagem de erro própria nesta versão: só a validação nativa do navegador. -->
-        <form action="#contato" method="post" aria-describedby="contato-instrucao">
+        <!-- form: agrupa os campos e permite envio com Enter.
+             id="form-contato": gancho do formulario.js (valida, mostra o erro e cancela o envio).
+             Removi method="post": numa página estática (servidor local ou GitHub Pages) um POST
+             devolve 404/405. Sem method, o padrão é GET: sem JS a página só recarrega em #contato.
+             Com JS, o preventDefault do formulario.js nem deixa a requisição sair. -->
+        <form id="form-contato" action="#contato" aria-describedby="contato-instrucao">
           <div class="mb-3">
             <!-- label + for/id: rótulo ligado ao campo. form-label e form-control só dão o visual do Bootstrap.
                  required: validação nativa. autocomplete: o navegador sugere o valor. -->
             <label class="form-label fw-bold" for="nome">Nome</label>
             <input class="form-control" id="nome" name="nome" type="text" autocomplete="name" required>
+            <!-- Erro: escondido por hidden. O formulario.js mostra no envio e liga o aria-describedby
+                 do campo a este id. text-danger: vermelho do Bootstrap. "Erro:" em texto, não só cor. -->
+            <p class="text-danger small mt-1 mb-0" id="nome-erro" hidden><strong>Erro:</strong> informe seu nome.</p>
           </div>
           <div class="mb-3">
             <label class="form-label fw-bold" for="email">E-mail</label>
             <!-- type="email": valida o formato e mostra o teclado certo no celular. -->
             <input class="form-control" id="email" name="email" type="email" autocomplete="email" required>
+            <p class="text-danger small mt-1 mb-0" id="email-erro" hidden><strong>Erro:</strong> informe um e-mail
+              válido,
+              como nome@exemplo.com.</p>
           </div>
           <div class="mb-3">
             <label class="form-label fw-bold" for="mensagem">Mensagem</label>
             <textarea class="form-control" id="mensagem" name="mensagem" rows="4" required></textarea>
+            <p class="text-danger small mt-1 mb-0" id="mensagem-erro" hidden><strong>Erro:</strong> escreva uma
+              mensagem.</p>
           </div>
           <!-- btn btn-primary: usa as minhas variáveis --bs-btn-* (verde da marca). -->
           <button class="btn btn-primary" type="submit">Enviar mensagem</button>
@@ -329,10 +535,11 @@
                type="button": não envia o formulário. -->
           <!-- btn-outline-dark: contorno e texto escuros (#212529), cerca de 14,6:1 sobre o bg-light.
                O btn-outline-secondary (#6c757d) dava 4,45:1, abaixo dos 4,5:1 do AA.-->
-          <button class="btn btn-outline-dark" type="button" data-bs-toggle="modal" data-bs-target="#modal-envio">Revisar antes de
+          <button class="btn btn-outline-dark" type="button" data-bs-toggle="modal"
+            data-bs-target="#modal-envio">Revisar antes de
             enviar</button>
           <!-- role="status": região viva e educada. Quando o texto mudar, o leitor de tela anuncia
-               sem mover o foco. Fica vazio até o JavaScript do T07. -->
+               sem mover o foco. Fica vazio até o formulario.js (T07) preenchê-lo. -->
           <p id="contato-status" class="mt-3 mb-0" role="status"></p>
         </form>
       </section>

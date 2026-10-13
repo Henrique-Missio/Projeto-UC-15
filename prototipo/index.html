@@ -9,6 +9,10 @@
   <meta name="description"
     content="Notícias, calendário de jogos e classificação da temporada no FutNotícias, portal fictício de futebol feito para aula.">
   <link rel="stylesheet" href="assets/styles.css">
+  <!-- JavaScript da T07 (menu, filtro, favoritos, trilho, formulário).
+       type="module": é adiado sozinho (como defer), não bloqueia a leitura do HTML.
+       Módulos exigem servidor http://, não abrem por file://. -->
+  <script type="module" src="js/main.js"></script>
 </head>
 
 <body>
@@ -23,16 +27,25 @@
     <a class="marca" href="#inicio">FutNotícias</a>
     <!-- nav: região de navegação principal.
          aria-label dá nome à região, para o leitor de tela anunciar "Principal, navegação". -->
-    <nav aria-label="Principal">
+    <!-- MENU: botão real. aria-controls aponta para o id da lista. -->
+    <nav class="nav" aria-label="Principal">
+      <!-- Escondido por padrão no CSS; a classe .js o mostra no mobile. -->
+      <button class="nav__toggle" type="button" data-menu-toggle aria-expanded="false" aria-controls="menu-principal"
+        aria-label="Menu">
+        <!-- Ícone hambúrguer desenhado pelo CSS. aria-hidden: é decorativo; o nome do botão vem do aria-label. -->
+        <span class="nav__icone" aria-hidden="true"></span>
+      </button>
       <!-- ul/li: o leitor de tela anuncia "lista com 5 itens". -->
-      <ul class="nav">
-        <!-- aria-current="page": avisa qual item é o atual, sem depender só de cor ou sublinhado. -->
-        <li><a class="nav__link" href="#inicio" aria-current="page">Home</a></li>
-        <!-- Cada href aponta para um id que existe na página. Nenhum href="#". -->
-        <li><a class="nav__link" href="#noticias">Notícias</a></li>
-        <li><a class="nav__link" href="#calendario">Calendário</a></li>
-        <li><a class="nav__link" href="#classificacao">Classificação</a></li>
-        <li><a class="nav__link" href="#contato">Contato</a></li>
+      <ul class="nav__lista" id="menu-principal">
+        <li><a href="#noticias">Notícias</a></li>
+        <!-- Favoritos: link real para a seção #favoritos. O número é atualizado pelo favoritos.js
+             (data-contador-favoritos). Nome acessível do link: "Favoritos (0)".
+             class="so-com-js": sem JavaScript não há favoritos, então o CSS esconde este item
+             (regra html:not(.js) .so-com-js no styles.css). -->
+        <li class="so-com-js"><a href="#favoritos">Favoritos (<span data-contador-favoritos>0</span>)</a></li>
+        <li><a href="#calendario">Calendário</a></li>
+        <li><a href="#classificacao">Classificação</a></li>
+        <li><a href="#contato">Contato</a></li>
       </ul>
     </nav>
   </header>
@@ -73,47 +86,135 @@
 
         <section id="noticias" aria-labelledby="titulo-noticias">
           <h2 id="titulo-noticias">Últimas Notícias</h2>
-              
-              <div class="fichas">
-              
-                <!-- .slot 1: último resultado -->
-                <div class="slot">
-                  <article class="ficha">
-                    <h3>Último resultado</h3>
-                    <p class="ficha__times"><span>Time da Casa</span> <span>2 x 0</span> <span>Vale FC</span></p>
-                    <!-- "Vitória" em texto: o resultado nunca depende só de cor.
+
+          <div class="fichas">
+
+            <!-- .slot 1: último resultado -->
+            <div class="slot">
+              <article class="ficha">
+                <h3>Último resultado</h3>
+                <p class="ficha__times"><span>Time da Casa</span> <span>2 x 0</span> <span>Vale FC</span></p>
+                <!-- "Vitória" em texto: o resultado nunca depende só de cor.
                                    time/datetime: a data em formato que máquina entende. -->
-                    <p class="ficha__meta"><span class="selo">Vitória</span> <time datetime="2026-10-04">04/10/2026</time>,
-                      Estádio Municipal</p>
-                  </article>
-                </div>
-                <!-- .slot 2: jogo anterior (mesmos dados da linha de 27/09 do calendário).
+                <p class="ficha__meta"><span class="selo">Vitória</span> <time datetime="2026-10-04">04/10/2026</time>,
+                  Estádio Municipal</p>
+              </article>
+            </div>
+            <!-- .slot 2: jogo anterior (mesmos dados da linha de 27/09 do calendário).
                                "Empate" em texto, não só cor. -->
-                <div class="slot">
-                  <article class="ficha">
-                    <h3>Jogo anterior</h3>
-                    <p class="ficha__times"><span>Cidade Alta</span> <span>1 x 1</span> <span>Time da Casa</span></p>
-                    <p class="ficha__meta"><span class="selo">Empate</span> <time datetime="2026-09-27">27/09/2026</time>,
-                      Arena Cidade Alta</p>
-                  </article>
-                </div>    
-              </div>
-          <!-- Melhoria progressiva: a lista está completa sem JS. O filtro da T07 só esconde itens. -->
-          <div class="grade-noticias">
+            <div class="slot">
+              <article class="ficha">
+                <h3>Jogo anterior</h3>
+                <p class="ficha__times"><span>Cidade Alta</span> <span>1 x 1</span> <span>Time da Casa</span></p>
+                <p class="ficha__meta"><span class="selo">Empate</span> <time datetime="2026-09-27">27/09/2026</time>,
+                  Arena Cidade Alta</p>
+              </article>
+            </div>
+          </div>
+          <!-- BUSCA (T07). form role="search": região de busca para leitor de tela.
+               Sem JS a lista abaixo aparece completa; o filtro só esconde itens.
+               Enter no campo não recarrega a página (o filtro.js cancela o envio). -->
+          <form role="search">
+            <div class="campo">
+              <label class="campo__rotulo" for="busca">Buscar notícias</label>
+              <!-- type="search": teclado/botão de limpar nativos. autocomplete="off": sem sugestões do navegador. -->
+              <input class="campo__controle" id="busca" name="busca" type="search" autocomplete="off">
+            </div>
+          </form>
+          <!-- role="status": região viva e educada. O filtro.js escreve "N resultados" e o leitor
+               de tela anuncia sem mover o foco. Sempre no DOM e vazia no início.
+               visualmente-oculto: some da tela, continua para o leitor de tela. -->
+          <p id="status-busca" class="visualmente-oculto" role="status"></p>
+          <!-- Estado vazio: aparece (hidden removido pelo JS) só quando nenhuma notícia casa com a busca. -->
+          <p id="busca-vazia" hidden>Nenhuma notícia encontrada. Tente outro termo.</p>
+
+          <!-- CONSENTIMENTO (T07): favoritos só vão para o localStorage se a pessoa aceitar.
+               hidden: o favoritos.js mostra o aviso só se ainda não houve decisão.
+               role="region" + aria-label: o aviso vira um ponto de referência com nome. -->
+          <div id="aviso-consentimento" role="region" aria-label="Salvar favoritos neste aparelho" hidden>
+            <p>Posso salvar seus favoritos neste aparelho?</p>
+            <button class="btn" type="button" data-consentimento="aceitar">Aceitar</button>
+            <button class="btn" type="button" data-consentimento="recusar">Recusar</button>
+          </div>
+          <!-- Contador de favoritos. data-contador-favoritos: o favoritos.js troca o número por
+               textContent em todos os elementos com este atributo (aqui e no menu). -->
+          <!-- so-com-js: escondido quando o JavaScript não roda (o contador depende dele). -->
+          <p class="so-com-js">Favoritos: <span data-contador-favoritos>0</span></p>
+
+          <!-- Melhoria progressiva: a lista está completa sem JS. O filtro da T07 só esconde itens.
+               id="lista-noticias": gancho do JS. O filtro percorre os filhos (um article por notícia)
+               e o favoritos.js ouve o clique aqui (delegação), inclusive em itens criados depois. -->
+          <div class="grade-noticias" id="lista-noticias">
             <!-- Um article por notícia. Cada um tem o seu h3. -->
-            <article class="card">
+            <!-- id="noticia-n1": destino do link da seção "Notícias favoritas". -->
+            <article class="card" id="noticia-n1">
               <h3>Resultado do Fim de Semana</h3>
               <p><span class="selo">Vitória</span></p>
               <p>O time da casa venceu por 2x0 no clássico regional.</p>
+              <!-- Botão de alternância. data-favorito = id único da notícia (chave no JS).
+                   aria-pressed = estado (false/true). O rótulo é fixo: o estado vai no ARIA,
+                   e o ícone ☆/★ vem do CSS (decorativo). -->
+              <button class="btn btn-favorito" type="button" data-favorito="n1" aria-pressed="false">Favoritar</button>
             </article>
-            <article class="card">
+            <!-- id="noticia-n2": destino do link da seção "Notícias favoritas". -->
+            <article class="card" id="noticia-n2">
               <h3>Novo Reforço</h3>
               <p>A equipe anunciou a contratação do novo atacante para a temporada.</p>
+              <button class="btn btn-favorito" type="button" data-favorito="n2" aria-pressed="false">Favoritar</button>
             </article>
-            <article class="card">
+            <!-- id="noticia-n3": destino do link da seção "Notícias favoritas". -->
+            <article class="card" id="noticia-n3">
               <h3>Treino aberto</h3>
               <p>A torcida pode acompanhar o treino aberto na quinta-feira, antes do próximo jogo.</p>
+              <button class="btn btn-favorito" type="button" data-favorito="n3" aria-pressed="false">Favoritar</button>
             </article>
+          </div>
+        </section>
+
+        <!-- NOTÍCIAS FAVORITAS (T07). Destino do link "Favoritos" do menu.
+             O favoritos.js monta a lista: um link por favorito, apontando para o card original.
+             Sem JS ou sem favoritos, fica só a mensagem de estado vazio. -->
+        <!-- so-com-js: sem JS não existe botão Favoritar, então a seção inteira fica escondida.
+             O link "Favoritos" do menu também (mesma classe), para não apontar para o nada. -->
+        <section class="so-com-js" id="favoritos" aria-labelledby="titulo-favoritos">
+          <h2 id="titulo-favoritos">Notícias favoritas</h2>
+          <p id="favoritos-vazio">Você ainda não favoritou nenhuma notícia. Use o botão "Favoritar" nas notícias.</p>
+          <ul id="lista-favoritos"></ul>
+        </section>
+
+        <!-- TRILHO / GALERIA (T07). section com h2 próprio (hierarquia h1 > h2 > h3 sem salto).
+             Três jeitos de navegar: botões Anterior/Próximo, setas do teclado (a faixa recebe foco)
+             e arraste (Pointer Events no trilho.js). Os botões são a alternativa ao arraste (WCAG 2.2). -->
+        <section id="lances" aria-labelledby="titulo-lances">
+          <h2 id="titulo-lances">Lances da rodada</h2>
+          <div class="trilho">
+            <!-- Faixa rolável. tabindex="0": entra na ordem do Tab para rolar com as setas.
+                 role="region" + aria-label: dá nome à área. -->
+            <div class="trilho__faixa" id="trilho-faixa" tabindex="0" role="region" aria-label="Galeria de lances">
+              <!-- Imagens de exemplo: reaproveitam a ilustração do estádio. Troque pelas imagens reais.
+                   loading="lazy": ficam abaixo da primeira tela. width/height: reservam espaço (evita CLS).
+                   figcaption: legenda visível de cada lance. -->
+              <figure class="trilho__item">
+                <img src="assets/img/estadio-480.svg" width="480" height="320" loading="lazy"
+                  alt="Ilustração de um estádio de futebol visto de cima, com o campo listrado em verde">
+                <figcaption>Lance 1: chute de fora da área</figcaption>
+              </figure>
+              <figure class="trilho__item">
+                <img src="assets/img/estadio-480.svg" width="480" height="320" loading="lazy"
+                  alt="Ilustração de um estádio de futebol visto de cima, com o campo listrado em verde">
+                <figcaption>Lance 2: defesa no último minuto</figcaption>
+              </figure>
+              <figure class="trilho__item">
+                <img src="assets/img/estadio-480.svg" width="480" height="320" loading="lazy"
+                  alt="Ilustração de um estádio de futebol visto de cima, com o campo listrado em verde">
+                <figcaption>Lance 3: gol de cabeça</figcaption>
+              </figure>
+            </div>
+            <!-- Botões depois da faixa: a ordem do Tab (faixa, Anterior, Próximo) é a ordem visual.
+                 aria-disabled (e não disabled): o foco não se perde quando o botão chega à ponta.
+                 O trilho.js atualiza o valor ao rolar. -->
+            <button class="btn" type="button" data-trilho="anterior" aria-disabled="true">Anterior</button>
+            <button class="btn" type="button" data-trilho="proximo">Próximo</button>
           </div>
         </section>
 
@@ -261,7 +362,10 @@
           <p id="contato-instrucao">Todos os campos são obrigatórios. Este formulário é uma demonstração e não envia
             dados.</p>
           <!-- form: agrupa os controles e permite envio com Enter. -->
-          <form aria-describedby="contato-instrucao">
+          <!-- id="form-contato": gancho do formulario.js. O JS liga novalidate só quando está ativo:
+               sem JS a validação nativa do navegador continua valendo.
+               Sem method/action de envio: nada é enviado a servidor nenhum. -->
+          <form id="form-contato" aria-describedby="contato-instrucao">
             <div class="campo">
               <!-- label + for/id: o rótulo fica ligado ao campo. Clicar no texto foca o campo.
                    O rótulo é visível e fixo. Não uso placeholder no lugar dele. -->
@@ -271,23 +375,25 @@
                     O aria-describedby deste campo é ligado por JavaScript no T07, só quando
                     o campo fica inválido (decisão D-03). Até lá, a mensagem de erro logo abaixo
                     fica oculta. -->
-              <input class="campo__controle" id="nome" name="nome" type="text" autocomplete="name" required aria-describedby="nome-erro">
-              <!-- A mensagem de erro existe no HTML, mas o CSS a esconde.
-                   Ela aparece quando o campo fica inválido (:user-invalid).
+              <input class="campo__controle" id="nome" name="nome" type="text" autocomplete="name" required>
+              <!-- A mensagem de erro existe no HTML, mas o atributo hidden a esconde.
+                   No envio, o formulario.js tira o hidden e liga o aria-describedby do campo a ela.
+                   Quando o campo fica válido, o JS esconde de novo e remove o aria-describedby.
+                   (Um aria-describedby fixo apontando para um elemento hidden ainda seria lido.)
                    "Erro:" em texto: o erro não depende só da cor vermelha. -->
               <p class="erro" id="nome-erro" hidden><strong>Erro:</strong> informe seu nome.</p>
             </div>
             <div class="campo">
               <label class="campo__rotulo" for="email">E-mail</label>
               <!-- type="email": o navegador valida o formato e mostra o teclado certo no celular. -->
-              <input class="campo__controle" id="email" name="email" type="email" autocomplete="email" required aria-describedby="email-erro">
+              <input class="campo__controle" id="email" name="email" type="email" autocomplete="email" required>
               <p class="erro" id="email-erro" hidden><strong>Erro:</strong> informe um e-mail válido, como
                 nome@exemplo.com.
               </p>
             </div>
             <div class="campo">
               <label class="campo__rotulo" for="mensagem">Mensagem</label>
-              <textarea class="campo__controle" id="mensagem" name="mensagem" rows="4" required aria-describedby="mensagem-erro"></textarea>
+              <textarea class="campo__controle" id="mensagem" name="mensagem" rows="4" required></textarea>
               <p class="erro" id="mensagem-erro" hidden><strong>Erro:</strong> escreva uma mensagem.</p>
             </div>
             <!-- button type="submit": botão nativo. Funciona com Tab, Enter e Espaço sem código extra. -->
@@ -324,7 +430,5 @@
     <p>Projeto de Aula - 2026</p>
     <p>Conteúdo fictício. Textos e ilustrações autorais, licença CC BY 4.0.</p>
   </footer>
-
 </body>
-
 </html>

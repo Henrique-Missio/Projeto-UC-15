@@ -20,7 +20,7 @@ Aqui eu registro o porquê. O que foi feito, com classes, larguras e medidas, es
 ## D-03: Fallback e melhoria progressiva (T01)
 
 - Recurso escolhido: o formulário e as tabelas.
-- Piso: sem CSS, o conteúdo está inteiro no HTML. Sem JavaScript, a navegação por âncoras funciona. A mensagem de erro de cada campo existe no HTML com o atributo `hidden`. O CSS a mostra em `:user-invalid`. O `aria-describedby` é ligado por JS na T07, só quando o campo é inválido.
+- Piso: sem CSS, o conteúdo está inteiro no HTML. Sem JavaScript, a navegação por âncoras funciona. A mensagem de erro de cada campo existe no HTML com o atributo `hidden`. O CSS a mostra em `:user-invalid`. O `aria-describedby` é ligado por JS na T07, só quando o campo é inválido. Feito na T07, ver D-15.
 - Melhoria: o CSS acrescenta grade, container query e estados.
 - Conferido em 11/10/2026: a ordem de leitura sem CSS segue a ordem do HTML.
 
@@ -125,13 +125,43 @@ Aqui eu registro o porquê. O que foi feito, com classes, larguras e medidas, es
 - Passaram: links do menu 5,15:1, legenda 6,58:1 e badge 4,53:1 (por pouco).
 - Reprovou: 'btn-outline-secondary' ('#6c757d') sobre o 'bg-light' ('#f8f9fa'), 4,45:1. O DevTools não mostra a razão quando o fundo do botão é transparente, então calculei à mão.
 - Decisão: trocar por 'btn-outline-dark'. Mantém o contorno e não pede CSS próprio.
-- Consequência: a F2 continua com 2 regras próprias.
+- Consequência: a F2 continua com 2 regras próprias e 72 classes.
 - Origem: 'COMPATIBILIDADE.md', seção "Contraste conferido".
+- Na T07 entrou uma terceira, a do aria-invalid. Ver D-15.
+
+## D-15: JavaScript nativo (T07)
+
+**Como carrego o JS.** Uso `<script type="module" src="js/main.js">`. O módulo é adiado sozinho, como o `defer`, e não bloqueia a leitura do HTML. O custo é que módulos não abrem por `file://`, então sempre testo por servidor HTTP.
+
+**Melhoria progressiva.** O `main.js` põe a classe `js` no `<html>`. Todo o CSS que só vale com JavaScript depende dela. O menu hambúrguer só aparece com `.js`. A busca, os botões Favoritar e o Anterior/Próximo somem com `html:not(.js)`. Os itens inteiros (contador, link e seção de favoritos) usam a classe `so-com-js`. Sem JS, a lista de notícias aparece completa, o menu é visível e o formulário usa a validação nativa. Evidência: `docs/evidencias/t07-sem-js.png`.
+
+**Delegação de evento.** Os favoritos usam um único listener na lista, com `closest('button[data-favorito]')`. Assim o clique no `span` ou no ícone dentro do botão funciona, e itens criados depois do listener também. O filtro lê `lista.children` a cada digitação, então itens novos entram na busca sem código extra.
+
+**Consentimento dos favoritos.** Só gravo no `localStorage` depois de a pessoa clicar em "Aceitar". Sem consentimento, o favorito vive em memória e some ao recarregar. Se ela recusa, apago os favoritos que já estavam salvos. Registro a própria escolha (`aceito` ou `recusado`) no `localStorage` para não perguntar toda vez. Reconheço o limite: gravar "recusado" também é gravar. A alternativa seria perguntar de novo a cada visita. Todo acesso ao `localStorage` fica em `try/catch`, porque ele pode estar bloqueado. Nesse caso o favorito funciona só em memória, sem erro no console.
+
+**Texto do usuário.** Todo texto dinâmico entra por `textContent` ou `createElement`, nunca por `innerHTML`. Testei a busca com `<b>x</b>` e nada quebra.
+
+**Busca.** Normalizo o texto (sem acento, minúsculas), então "gremio" casa com "Grêmio". O texto pesquisável exclui os botões. Sem isso, buscar "fav" casaria com todos os cards por causa do botão "Favoritar". O resultado vai para uma região `role="status"`, com "N resultados", e o estado vazio tem mensagem visível.
+
+**Trilho.** Uso Pointer Events (`pointerdown`, `pointermove`, `pointerup`, `pointercancel`) e não `touchstart` + `click`, para não duplicar evento. Só chamo `setPointerCapture` depois que o movimento passa de 6px. Capturar já no `pointerdown` redireciona o clique para a faixa e quebra links dentro dos cards. O CSS usa `touch-action: pan-y pinch-zoom`. Os botões Anterior/Próximo e as setas do teclado (a faixa tem `tabindex="0"`) são a alternativa ao arraste, como pede a WCAG 2.2. Nas pontas uso `aria-disabled` e não `disabled`, porque `disabled` tira o foco do botão que acabou de ser clicado. Um clique logo após um arraste é cancelado na fase de captura.
+
+**Formulário e decisão D-03.** O `aria-describedby` de cada campo não fica fixo no HTML. O `formulario.js` liga o campo à mensagem de erro só quando ele está inválido e remove quando fica válido. Um `aria-describedby` apontando para um elemento `hidden` ainda é lido por leitores de tela, o que anunciaria um erro que não existe. Desligo os balões nativos com `form.noValidate = true` só via JS, então sem JS a validação nativa continua valendo. O resultado vai para uma região `role="status"` e a tela diz que nada é enviado.
+
+**O 404 na bootstrap.html.** O formulário tinha `method="post"`. Num servidor estático (local ou GitHub Pages) um POST para a página devolve 404. Removi o `method` e o `formulario.js` chama `preventDefault`. Evidência: `docs/evidencias/t07-network-sem-envio.png` (aba Rede vazia ao enviar).
+
+**AbortController.** Um único `AbortController` passa o `signal` a todos os módulos. `desmontar()` chama `abort()` e remove todos os listeners de uma vez. `montar()` tem uma guarda, então chamar duas vezes não duplica handler.
+
+**Ordem das regras no CSS.** `[hidden]` e `.card` têm a mesma especificidade (0-1-0). Quando coloquei `.card { display: flex }` depois do `[hidden]`, o filtro parou de esconder os cards. Corrigi movendo o `[hidden]` para a última regra do arquivo. Regra que sigo agora: qualquer `display` novo num elemento que o JS esconde vem antes do `[hidden]`. Pelo mesmo motivo, `.erro:not([hidden])` mostra o erro, já que `.erro` tem `display: none`.
+
+**Evidências da T07** (em `docs/evidencias/`): `t07-menu-320-fechado.png`, `t07-menu-320-aberto.png`, `t07-filtro-resultados.png`, `t07-filtro-vazio.png`, `t07-favoritos-consentimento.png`, `t07-favoritos-secao.png`, `t07-trilho.png`, `t07-form-erros.png`, `t07-form-sucesso.png`, `t07-console-limpo.png`, `t07-network-sem-envio.png`, `t07-sem-js.png`.
+
+- Origem: 'COMPATIBILIDADE.md', seção "JavaScript: diferenças entre F1 e F2 (T07)".
 
 ## Pendências conhecidas
 
-- O formulário ainda não tem JavaScript. Ele não envia dados, e o botão de envio não mostra resultado. Entra no T07.
 - Firefox, WebKit e celular real ainda não foram testados. Entram no T11.
 - Em 160px de largura a F1 tem rolagem horizontal. O critério é 320px.
-- Faltam os prints do T07 em diante. Os de T00 a T06 estão em `docs/evidencias/`.
-- O linter de HTML reclama de 'div role="region"' nas tabelas e do 'aria-hidden' do modal. Mantive os dois: seguem o padrão ensinado na A17 e na A14.
+- Na F2, sem JavaScript, o menu e o modal não funcionam: dependem do bundle do Bootstrap.
+- Busca, favoritos e trilho existem só na F1.
+- Os números de peso e de regras do 'COMPATIBILIDADE.md' foram medidos antes da T07. Preciso refazê-los.
+- Os prints de T00 a T07 estão em 'docs/evidencias/'. Faltam os de T08 em diante.
