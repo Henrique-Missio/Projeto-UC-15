@@ -157,11 +157,41 @@ Aqui eu registro o porquê. O que foi feito, com classes, larguras e medidas, es
 
 - Origem: 'COMPATIBILIDADE.md', seção "JavaScript: diferenças entre F1 e F2 (T07)".
 
+## D-16: jQuery 4.0.0 na F2 (T08)
+
+**Onde entra.** O jQuery vive só em 'bootstrap.html'. A F2 é a página que já tem Bootstrap e os favoritos, então a comparação com o nativo fica na mesma tela.
+
+**Ficha.**
+- Versão: 4.0.0, build completo ('jquery.min.js'), local em 'assets/vendor/jquery-4.0.0/'.
+- Origem: pacote 'jquery@4.0.0' no npm. Licença MIT, 'LICENSE.txt' guardado ao lado.
+- Tamanho: 78.748 bytes (27.443 com gzip).
+- Código próprio: 'js/jquery-favoritos.js', 3.910 bytes com comentários (1.806 com gzip).
+- Manutenção: projeto ativo, da OpenJS Foundation. Confiro o changelog antes de trocar de versão.
+- Alternativa nativa: 'favoritos.js' (T07).
+
+**Conflito com o main.js.** O 'main.js' é compartilhado: o 'index.html' depende do 'favoritos.js'. Não posso tirá-lo do import. Se o jQuery também alternasse o 'aria-pressed', cada clique seria tratado duas vezes e o botão voltaria ao estado anterior. Decisão: o jQuery só observa. O nativo continua dono do estado, do consentimento e do 'localStorage'. O jQuery só lê o 'aria-pressed' e mostra o total. Nem o 'main.js' nem o 'index.html' mudaram. Alternativa descartada: um atributo no '<html>' para o 'main.js' pular o 'favoritos.js' só na F2. Obrigaria o jQuery a refazer consentimento, 'localStorage' e a lista.
+
+**O que o jQuery faz.**
+- Delegação na lista, com namespace: '$lista.on('click.favoritos', 'button[data-favorito]', ...)'. O clique no 'span' e itens criados depois funcionam.
+- '$total.text(n)': o número entra como texto, nunca como HTML.
+- 'setTimeout' 0: espera o handler nativo trocar o 'aria-pressed' antes de contar.
+- '$(function)': conta depois dos scripts adiados, então os favoritos restaurados já entram no total.
+- 'montar()' chama 'desmontar()' antes. Montar duas vezes não duplica handler. '.off('.favoritos')' remove só os meus.
+- 'MutationObserver': o 'favoritos.js' restaura os favoritos do 'localStorage' no carregamento, sem clique e depois da contagem inicial do jQuery. Na primeira versão o contador ficava em 0 ao recarregar. O observador recalcula o total quando o 'aria-pressed' muda ou um card entra na lista. 'desmontar()' o desliga.
+- Item dinâmico: no Console, criei um card novo com 'button[data-favorito]' dentro de '#lista-noticias' e cliquei nele. O total subiu sem eu religar nenhum handler. A delegação cobre itens criados depois do listener. Evidência: 'docs/evidencias/t08-item-dinamico.png'.
+
+**Carga fria.** Medi 'bootstrap.html' com e sem as duas linhas de script do jQuery, cache desligado, Fast 4G, mobile, 3 execuções, mediana. Medir 'index.html' contra 'bootstrap.html' não isola o jQuery: o Bootstrap também pesa. Resultado: [preencher: KB e requisições sem jQuery / com jQuery].
+
+**Plano de remoção.** Apagar as duas linhas de script em 'bootstrap.html', a pasta 'assets/vendor/jquery-4.0.0/' e 'js/jquery-favoritos.js'. O parágrafo do contador com 'data-total-favoritos' pode sair junto. Nada mais depende dele.
+
+**Limite.** O contador do jQuery repete o do menu ('data-contador-favoritos'). É uma demonstração, não uma necessidade. Para o portal eu usaria só o nativo: o jQuery custa 27 KB (gzip) por um recurso que o nativo já cobre.
+
+- Evidências: 'docs/evidencias/t08-rede-sem-jquery.png', 't08-rede-com-jquery.png', 't08-contador.png', 't08-console-limpo.png'.
+
 ## Pendências conhecidas
 
 - Firefox, WebKit e celular real ainda não foram testados. Entram no T11.
 - Em 160px de largura a F1 tem rolagem horizontal. O critério é 320px.
 - Na F2, sem JavaScript, o menu e o modal não funcionam: dependem do bundle do Bootstrap.
-- Busca, favoritos e trilho existem só na F1.
-- Os números de peso e de regras do 'COMPATIBILIDADE.md' foram medidos antes da T07. Preciso refazê-los.
+- Os números de peso e de regras do 'COMPATIBILIDADE.md' foram medidos antes da T07. Peso da F2 refeito depois do jQuery (T08).
 - Os prints de T00 a T07 estão em 'docs/evidencias/'. Faltam os de T08 em diante.
