@@ -9,6 +9,12 @@
     content="Versão do FutNotícias feita com Bootstrap 5.3.8 local: notícias, calendário de jogos e classificação da temporada.">
   <!-- CSS do Bootstrap, versão fixa e local. Funciona offline. -->
   <link rel="stylesheet" href="assets/vendor/bootstrap-5.3.8/bootstrap.min.css">
+  <!-- jQuery 4.0.0 local (T08), build completo. defer: baixa em paralelo e executa depois do HTML,
+       na ordem escrita. O jQuery vem ANTES do código que o usa. Sem CDN: funciona offline. -->
+  <script src="assets/vendor/jquery-4.0.0/jquery.min.js" defer></script>
+  <!-- Contador de favoritos com jQuery (T08). Só observa o aria-pressed: quem alterna o favorito
+       é o favoritos.js nativo, via main.js. Não carregar esta linha no index.html. -->
+  <script src="js/jquery-favoritos.js" defer></script>
   <!-- Minhas duas regras próprias. -->
   <style>
     /* Verde da marca (já existia). */
@@ -138,8 +144,8 @@
   <!-- JavaScript do Bootstrap (já inclui o Popper). Faz o menu recolher e o modal abrir.
        defer: baixa em paralelo e só roda depois de o HTML estar pronto. Não bloqueia a leitura da página. -->
   <script defer src="assets/vendor/bootstrap-5.3.8/bootstrap.bundle.min.js"></script>
-  <!-- JavaScript da T07. Aqui só o formulario.js tem efeito: o menu é do Bootstrap e a página
-       não tem os ids de busca, favoritos e trilho (esses módulos saem sozinhos, sem erro).
+  <!-- JavaScript da T07 (filtro, favoritos, trilho e formulário; o menu é do Bootstrap e o módulo
+       do menu sai sozinho). O mesmo main.js serve ao index.html.
        type="module": adiado sozinho, roda depois do HTML pronto. Exige servidor http://. -->
   <script type="module" src="js/main.js"></script>
 </head>
@@ -259,9 +265,10 @@
           <button class="btn btn-primary me-2" type="button" data-consentimento="aceitar">Aceitar</button>
           <button class="btn btn-outline-dark" type="button" data-consentimento="recusar">Recusar</button>
         </div>
-        <!-- so-com-js: escondido quando o JavaScript não roda (o contador depende dele). -->
-        <p class="so-com-js">Favoritos: <span data-contador-favoritos>0</span></p>
-
+        <!-- Contador feito com jQuery (T08). data-total-favoritos: o jquery-favoritos.js troca o número.
+             so-com-js: escondido quando o JavaScript não roda (o contador depende dele).
+             role="status": leitor de tela anuncia a mudança. aria-atomic: lê a frase inteira. -->
+        <p class="so-com-js" role="status" aria-atomic="true">Favoritos: <span data-total-favoritos>0</span></p>
         <!-- Grade do Bootstrap (Flexbox por baixo): row é a linha, col-* são as colunas.
              g-3 dá o espaço entre cartões (gutter).
              col-12: um cartão por linha na base. col-md-6: dois por linha a partir de 768px.
@@ -560,7 +567,8 @@
   <!-- footer: créditos e licenças. bg-dark text-white text-center py-2: cores e espaço por utilities. m-0 zera a margem dos parágrafos. -->
   <footer class="bg-dark text-white text-center py-2">
     <p class="m-0">Projeto de Aula - 2026</p>
-    <p class="m-0">Conteúdo fictício. Textos e ilustrações autorais, licença CC BY 4.0. Bootstrap 5.3.8, licença MIT.
+    <p class="m-0">Conteúdo fictício. Textos e ilustrações autorais, licença CC BY 4.0. Bootstrap 5.3.8 e jQuery 4.0.0,
+      licença MIT.
     </p>
   </footer>
 
