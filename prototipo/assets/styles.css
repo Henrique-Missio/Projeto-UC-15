@@ -595,3 +595,316 @@ p {
     transform: none;
   }
 }
+
+/* ===== T07: estilos de apoio ao JavaScript =====
+   Este bloco fica no FIM do arquivo de propósito: as regras têm a mesma especificidade das
+   originais e vencem pela ordem. Só usa tokens do :root. Zero ID, zero !important. */
+
+/* ---- Menu: .nav (nav), .nav__toggle (botão), .nav__lista (ul) ----
+   Sem JS: botão escondido, lista visível (a navegação funciona).
+   Com JS (classe .js no <html>): botão aparece no mobile e a lista só abre com .is-open. */
+
+/* .nav é o <nav>. No mobile é uma COLUNA: o botão hambúrguer em cima e a lista embaixo dele.
+   align-items: center centraliza os dois, como o resto do cabeçalho.
+   (O .nav base é flex em linha; sem flex-direction o botão ficava ao lado da lista.) */
+.nav {
+  flex-direction: column;
+  align-items: center;
+}
+
+/* Botão hambúrguer. O nome acessível vem do aria-label="Menu" no HTML (o ícone é decorativo).
+   Quadrado de 44px (alvo de toque). inline-flex + center: o ícone fica no meio. */
+.nav__toggle {
+  display: none;
+  /* sem JS não há o que alternar */
+  min-inline-size: 2.75rem;
+  min-block-size: 2.75rem;
+  /* alvo de 44px (meta do projeto) */
+  padding: .5em;
+  color: inherit;
+  /* branco: herda do .cabecalho */
+  background-color: transparent;
+  border: var(--espessura-borda) solid currentColor;
+  cursor: pointer;
+}
+
+/* Ícone hambúrguer: 3 barras desenhadas só com CSS (sem imagem, sem download).
+   O span é a barra do meio; ::before e ::after são as de cima e de baixo (decorativas).
+   currentColor: as barras usam a cor do texto do botão (branca). */
+.nav__icone,
+.nav__icone::before,
+.nav__icone::after {
+  display: block;
+  inline-size: 1.5rem;
+  block-size: var(--espessura-borda);
+  background-color: currentColor;
+  /* Transição só nas propriedades que mudam. Nunca "transition: all". */
+  transition: transform var(--duracao) var(--curva), background-color var(--duracao) var(--curva);
+}
+
+.nav__icone {
+  position: relative;
+  /* referência para posicionar as barras de cima e de baixo */
+}
+
+.nav__icone::before,
+.nav__icone::after {
+  content: '';
+  position: absolute;
+  inset-inline-start: 0;
+}
+
+.nav__icone::before {
+  inset-block-start: -.5rem;
+  /* barra de cima */
+}
+
+.nav__icone::after {
+  inset-block-start: .5rem;
+  /* barra de baixo */
+}
+
+/* Menu aberto (aria-expanded="true"): o hambúrguer vira um X.
+   A barra do meio some e as outras duas se cruzam. O estado também está no ARIA,
+   então o X é só reforço visual. */
+.nav__toggle[aria-expanded='true'] .nav__icone {
+  background-color: transparent;
+}
+
+.nav__toggle[aria-expanded='true'] .nav__icone::before {
+  transform: translateY(.5rem) rotate(45deg);
+}
+
+.nav__toggle[aria-expanded='true'] .nav__icone::after {
+  transform: translateY(-.5rem) rotate(-45deg);
+}
+
+.nav__toggle:focus-visible {
+  outline: var(--espessura-foco) solid var(--cor-foco);
+  /* no cabeçalho, --cor-foco já é branco */
+  outline-offset: .125rem;
+}
+
+.js .nav__toggle {
+  display: inline-flex;
+  align-items: center;
+}
+
+/* Lista do menu: sem bullet, coluna no mobile (os links aparecem EMBAIXO do botão).
+   gap usa tokens de espaço. */
+.nav__lista {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: .25rem var(--espaco-2);
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+/* Link do menu: alvo de 44px, texto invertido sobre o verde (5,15:1). */
+.nav__lista a {
+  display: inline-flex;
+  align-items: center;
+  min-block-size: 2.75rem;
+  padding-inline: .5em;
+  color: var(--cor-texto-invertido);
+  text-decoration: none;
+}
+
+/* Hover e foco: sublinhado e anel. O estado não depende só de cor. */
+.nav__lista a:hover {
+  text-decoration: underline;
+}
+
+.nav__lista a:focus-visible {
+  outline: var(--espessura-foco) solid var(--cor-foco);
+  outline-offset: .125rem;
+}
+
+/* Fechado no mobile: sai da tela e da árvore de acessibilidade.
+   Especificidade 0-3-0: vence o display:flex de .nav__lista (0-1-0). */
+.js .nav__lista:not(.is-open) {
+  display: none;
+}
+
+/* Breakpoint por conteúdo: 48rem é onde o menu inteiro cabe em uma linha. */
+@media (min-width: 48rem) {
+
+  /* Desktop: o botão some e a lista vira uma linha. */
+  .nav {
+    flex-direction: row;
+    justify-content: center;
+  }
+
+  .js .nav__toggle {
+    display: none;
+  }
+
+  .nav__lista,
+  .js .nav__lista:not(.is-open) {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+}
+
+/* ---- Favorito (.btn-favorito) ----
+   Estado por texto/ícone, não só cor: o pseudo-elemento é decorativo,
+   o estado real é o aria-pressed. */
+.btn-favorito::before {
+  content: '☆ ';
+}
+
+.btn-favorito[aria-pressed='true']::before {
+  content: '★ ';
+}
+
+.btn-favorito[aria-pressed='true'] {
+  font-weight: 700;
+  /* reforço além do ícone */
+}
+
+/* Botão sempre no fundo do card. O .card vira uma coluna FLEXBOX: título e textos em cima.
+   margin-block-start: auto empurra o botão para o fim, então os 3 ficam alinhados mesmo
+   com textos de alturas diferentes. Os cards já têm a mesma altura (a grade estica as células).
+   align-self: flex-start mantém o botão com a largura do texto, à esquerda (sem esticar). */
+.card {
+  display: flex;
+  flex-direction: column;
+}
+
+.card .btn-favorito {
+  align-self: flex-start;
+  margin-block-start: auto;
+}
+
+/* ---- Trilho / galeria: .trilho, .trilho__faixa, .trilho__item ----
+   GRID de 2 colunas: a faixa ocupa a linha de cima (as duas colunas) e os botões
+   Anterior/Próximo ficam embaixo, lado a lado. No HTML a faixa vem ANTES dos botões,
+   então a ordem do Tab = ordem visual (sem usar "order").
+   Funciona em 320px: a imagem tem a largura toda, os botões não a espremem.
+   max-inline-size 30rem (480px): o tamanho do arquivo de imagem. */
+.trilho {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  /* minmax(0, ...): coluna pode encolher */
+  gap: var(--espaco-2);
+  max-inline-size: 30rem;
+}
+
+/* Faixa rolável: FLEXBOX em linha. Cada item tem a largura da faixa (uma imagem por vez).
+   - grid-column: 1 / -1  ocupa as duas colunas do .trilho.
+   - overflow-x: auto  a rolagem horizontal fica SÓ aqui dentro.
+   - scroll-snap-type: x mandatory  a rolagem para sempre alinhada num item.
+   - touch-action: pan-y pinch-zoom  o navegador cuida da rolagem vertical e do zoom;
+     o arraste horizontal chega ao trilho.js (Pointer Events). */
+.trilho__faixa {
+  display: flex;
+  grid-column: 1 / -1;
+  gap: var(--espaco-2);
+  min-inline-size: 0;
+  overflow-x: auto;
+  scroll-snap-type: x mandatory;
+  touch-action: pan-y pinch-zoom;
+}
+
+/* Item (figure): ocupa 100% da faixa e não encolhe (0 0).
+   scroll-snap-align: start alinha o item no início da faixa.
+   margin: 0 tira a margem padrão do <figure>. */
+.trilho__item {
+  flex: 0 0 100%;
+  scroll-snap-align: start;
+  margin: 0;
+}
+
+/* A imagem preenche o item e mantém a proporção 3:2 (width/height do HTML). */
+.trilho__item img {
+  display: block;
+  inline-size: 100%;
+  block-size: auto;
+}
+
+/* Durante o arraste o snap sai, senão ele disputa com o dedo. */
+.trilho__faixa.is-arrastando {
+  scroll-snap-type: none;
+  cursor: grabbing;
+  user-select: none;
+  /* não seleciona texto ao arrastar */
+}
+
+/* Foco por teclado na faixa: o anel nunca é removido. */
+.trilho__faixa:focus-visible {
+  outline: var(--espessura-foco) solid var(--cor-foco);
+  outline-offset: .125rem;
+}
+
+/* Botão na ponta: usa aria-disabled (e não disabled) para o foco não se perder.
+   Visual igual ao .btn:disabled, com os mesmos tokens. Vem depois de .btn:hover e vence pela ordem. */
+[data-trilho][aria-disabled='true'] {
+  color: var(--cor-desabilitado-texto);
+  background-color: var(--cor-desabilitado-fundo-btn);
+  border-color: var(--cor-desabilitado-borda);
+  cursor: not-allowed;
+}
+
+/* ---- Formulário com JS ----
+   Os erros ficam em <p class="erro" hidden>. O formulario.js tira o hidden no envio.
+   .erro base tem display:none; sem esta regra o erro continuaria escondido, porque o
+   único gatilho era :user-invalid. :not([hidden]) = "o JS mandou mostrar". */
+.erro:not([hidden]) {
+  display: block;
+}
+
+/* Campo inválido: aria-invalid (marcado pelo JS) fica igual ao :user-invalid.
+   O erro tem texto ("Erro: ..."), borda e fundo: não depende só de cor. */
+.campo__controle[aria-invalid='true'] {
+  border-color: var(--cor-erro);
+  background-color: var(--cor-erro-fundo);
+}
+
+/* ---- Texto só para leitor de tela (.visualmente-oculto) ----
+   Sai da tela (1px, recortado) mas continua na árvore de acessibilidade.
+   Usado na região role="status" da busca. */
+.visualmente-oculto {
+  position: absolute;
+  inline-size: 1px;
+  block-size: 1px;
+  margin: -1px;
+  padding: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Movimento reduzido: o trilho.js já usa behavior: 'auto'; o CSS tira o resto. */
+@media (prefers-reduced-motion: reduce) {
+  .trilho__faixa {
+    scroll-behavior: auto;
+  }
+
+  /* O hambúrguer troca para X na hora, sem animar. */
+  .nav__icone,
+  .nav__icone::before,
+  .nav__icone::after {
+    transition: none;
+  }
+}
+
+/* Sem JS: controles que dependem de JavaScript ficam escondidos.
+   A classe "js" é posta no <html> pelo main.js, então html:not(.js) = JS ausente.
+   Especificidade 0-3-1: vence .btn e .campo sem !important. */
+html:not(.js) [role='search'],
+html:not(.js) .btn-favorito,
+html:not(.js) [data-trilho],
+html:not(.js) .so-com-js {
+  display: none;
+}
+
+/* [hidden]: o atributo nativo perde para qualquer "display" de classe (ex.: .card, .btn).
+   Esta regra TEM de ser a última do arquivo: tem a mesma especificidade (0-1-0) de .card,
+   então só vence se vier depois dela. É o que faz o filtro esconder os cards e os avisos sumirem. */
+[hidden] {
+  display: none;
+}
