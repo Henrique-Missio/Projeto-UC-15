@@ -55,9 +55,23 @@
 - Evidência: os 4 prints `t10-restauracao-checagem-*.png` em `docs/evidencias/`.
 - Limite: restauração testada só entre dois sites locais, na mesma máquina.
 
-## Staging, produção e rollback
-
-(Staging é um segundo site no Studio. Produção real não existe: débito declarado.)
+## Staging
+- Staging: 2º site Studio, `futnoticias-staging`, porta 8882.
+- Origem: `futnoticias`, porta 8881.
+- Migração de URL: WP-CLI `search-replace`, ciente de dados serializados. Nunca `REPLACE` em SQL.
+- Ordem: simulação com `--dry-run`, backup do staging, execução, conferência.
+- Caso de teste: criei o post "Teste de URL" com um link para a porta 8881.
+- URLs antes: `siteurl` e `home` já em 8882 (o Studio ajustou na importação).
+- Simulação: 14 trocas previstas (1 em `post_content`, 13 em `guid`).
+- Execução: o relatório mostrou 646 trocas.
+- Divergência: o relatório conta linhas afetadas, inclusive em colunas sem URL (`user_login`, `post_status`). No SQLite do Studio ele não mede as trocas reais.
+- Conferência (vale mais que o relatório):
+  - Nova simulação: 0 trocas restantes.
+  - `siteurl` e `home` em 8882.
+  - Post de teste com o link em 8882.
+  - 3 usuários e 3 posts intactos.
+- Evidência: `docs/evidencias/t10-staging-search-replace-dry-run.png`, `t10-staging-search-replace.png`, `t10-staging-home2.png`.
+- Limite: staging local, sem HTTPS. A produção real não existe (débito declarado).
 
 ## Diferenças para produção
 - SQLite × MariaDB/MySQL: alguns plug-ins e SQL manual podem falhar.
