@@ -17,6 +17,14 @@
        type="module": é adiado sozinho (como defer), não bloqueia a leitura do HTML.
        Módulos exigem servidor http://, não abrem por file://. -->
   <script type="module" src="js/main.js"></script>
+  <!-- modulepreload (T09): o navegador baixa os módulos do main.js em paralelo, em vez de
+    descobri-los um a um depois que o main.js chega. Não muda o comportamento, só a ordem do download.
+    Cada href precisa ser igual ao import em js/main.js. -->
+  <link rel="modulepreload" href="js/menu.js">
+  <link rel="modulepreload" href="js/filtro.js">
+  <link rel="modulepreload" href="js/favoritos.js">
+  <link rel="modulepreload" href="js/trilho.js">
+  <link rel="modulepreload" href="js/formulario.js">
 </head>
 
 <body>
