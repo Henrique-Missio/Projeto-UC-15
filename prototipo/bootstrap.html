@@ -7,6 +7,10 @@
   <title>FutNotícias com Bootstrap: notícias, calendário e classificação</title>
   <meta name="description"
     content="Versão do FutNotícias feita com Bootstrap 5.3.8 local: notícias, calendário de jogos e classificação da temporada.">
+  <!-- URL canónica absoluta (T09) -->
+  <link rel="canonical" href="https://henrique-missio.github.io/Projeto-UC-15/bootstrap.html">
+  <!-- robots: sem noindex -->
+  <meta name="robots" content="index, follow">
   <!-- CSS do Bootstrap, versão fixa e local. Funciona offline. -->
   <link rel="stylesheet" href="assets/vendor/bootstrap-5.3.8/bootstrap.min.css">
   <!-- jQuery 4.0.0 local (T08), build completo. defer: baixa em paralelo e executa depois do HTML,
@@ -140,6 +144,33 @@
       --bs-btn-disabled-bg: #1b7e32;
       --bs-btn-disabled-border-color: #1b7e32;
     }
+
+    /* T09, WCAG 2.5.8 e meta de 44 px (2,75rem). O Bootstrap entrega 38 a 40 px.
+    Ajusto pelas variáveis do próprio Bootstrap (sem !important, sem editar o minificado). */
+
+    /* Botões: 24 px de linha + 2 x 0,5625rem (9 px) de padding + 2 px de borda = 44 px. */
+    .btn {
+      --bs-btn-padding-y: 0.5625rem;
+    }
+
+    /* Marca e botão do menu: as variáveis ficam no .navbar.
+    Marca: 30 px de linha + 2 x 0,4375rem (7 px) = 44 px.
+    Botão do menu: 30 px de ícone + 2 x 0,375rem (6 px) + 2 px de borda = 44 px. */
+    .navbar {
+      --bs-navbar-brand-padding-y: 0.4375rem;
+      --bs-navbar-toggler-padding-y: 0.375rem;
+    }
+
+    /* Campos: o .form-control não tem variável de padding vertical.
+    24 px de linha + 2 x 0,5625rem (9 px) + 2 px de borda = 44 px. */
+    .form-control {
+      padding-block: 0.5625rem;
+    }
+
+    /* T09: mesma margem de rolagem da F1 (2,5rem). Bootstrap não traz scroll-margin. */
+    [id] {
+    scroll-margin-block-start: 2.5rem;
+    }
   </style>
   <!-- JavaScript do Bootstrap (já inclui o Popper). Faz o menu recolher e o modal abrir.
        defer: baixa em paralelo e só roda depois de o HTML estar pronto. Não bloqueia a leitura da página. -->
@@ -148,6 +179,14 @@
        do menu sai sozinho). O mesmo main.js serve ao index.html.
        type="module": adiado sozinho, roda depois do HTML pronto. Exige servidor http://. -->
   <script type="module" src="js/main.js"></script>
+  <!-- modulepreload (T09): o navegador baixa os módulos do main.js em paralelo, em vez de
+    descobri-los um a um depois que o main.js chega. Não muda o comportamento, só a ordem do download.
+    Cada href precisa ser igual ao import em js/main.js. -->
+  <link rel="modulepreload" href="js/menu.js">
+  <link rel="modulepreload" href="js/filtro.js">
+  <link rel="modulepreload" href="js/favoritos.js">
+  <link rel="modulepreload" href="js/trilho.js">
+  <link rel="modulepreload" href="js/formulario.js">
 </head>
 <!-- Classes do body:
      - marca-futnoticias: escopo da customização do botão (ver o bloco de estilo acima).

@@ -72,17 +72,17 @@ Na versão anterior (F2 com Bootstrap 5.3.3) eu tinha testado 768, 954, 992 e 12
 
 ## CSS próprio e peso
 
-Os números abaixo são desta versão, depois da T07. Medi o CSS sem comentários e sem linhas em branco. Não comparam com os da primeira entrega, que era só uma home de 10 minutos.
+Os números abaixo são desta versão, depois da T09. Medi o CSS sem comentários e sem linhas em branco. Não comparam com os da primeira entrega, que era só uma home de 10 minutos.
 
-- F1: 104 regras de CSS próprio, 567 linhas, 12.461 bytes (2.764 com gzip). Mais 5 blocos de '@media' e '@container'.
-- F2: 13 regras, 75 linhas, 2.173 bytes (715 com gzip). Ficam num '<style>' dentro do 'bootstrap.html'. Não há '@media' nem '@container'.
+- F1: 105 regras de CSS próprio, 918 linhas, 12.461 bytes. Mais 5 blocos de '@media' e '@container'.
+- F2: 17 regras, 151 linhas, 5916 bytes. Ficam num '<style>' dentro do 'bootstrap.html'. Não há '@media' nem '@container'.
 - Bootstrap: CSS com 232.111 bytes (30.869 com gzip) e bundle JS com 80.496 bytes (23.743 com gzip).
 - JavaScript próprio: 7 arquivos em 'prototipo/js/', carregados como módulos nas duas páginas.
 - Página F1, com HTML, CSS, JS e a imagem de 480px: [84,6] KB transferidos, cache desligado.
 - Página F2, com HTML, CSS, JS e a imagem de 480px: [376] KB transferidos, cache desligado.
 - A F2 usa 80 classes diferentes do Bootstrap, mais 7 minhas: 'navbar-marca', 'marca-futnoticias', 'btn-favorito', 'so-com-js', 'trilho', 'trilho__faixa' e 'trilho__item'. Antes da T07 eram 72 do Bootstrap e 2 minhas.
 
-As 13 regras da F2 são:
+As 17 regras da F2 são:
 
 - 'navbar-marca': o verde '#1b7e32' não existe nas cores do Bootstrap.
 - 'btn-primary' com escopo: troca as variáveis '--bs-btn-*' do botão primário.
@@ -90,6 +90,8 @@ As 13 regras da F2 são:
 - Modo sem JavaScript: esconde busca, favoritos e trilho.
 - Botão favorito: o ícone ☆/★ e o estado pressionado, por variáveis '--bs-btn-*'. São 3 regras.
 - Trilho: o layout, a faixa, o item, o estado de arraste, o foco e o botão 'aria-disabled'. São 6 regras. O Bootstrap não tem 'scroll-snap' nem arraste.
+- Margem de rolagem: 'scroll-margin-block-start' em '[id]' (T09, foco não encoberto). É 1 regra.
+- Alvos de 44 px (T09): variáveis '--bs-btn-padding-y' em '.btn', '--bs-navbar-brand-padding-y' e '--bs-navbar-toggler-padding-y' em '.navbar' e 'padding-block' em '.form-control'. São 3 regras. O Bootstrap entrega 38 a 40 px; a meta do projeto é 44 px.
 
 Nenhuma usa '!important' e nenhuma edita o arquivo minificado.
 

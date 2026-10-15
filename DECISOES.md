@@ -188,6 +188,24 @@ Aqui eu registro o porquê. O que foi feito, com classes, larguras e medidas, es
 
 - Evidências: 'docs/evidencias/t08-rede-sem-jquery.png', 't08-rede-com-jquery.png', 't08-contador.png', 't08-console-limpo.png'.
 
+## D-17: Acessibilidade, SEO e desempenho (T09)
+
+**Canonical.** Cada página aponta para si mesma ('index.html' para 'https://henrique-missio.github.io/Projeto-UC-15/', 'bootstrap.html' para '.../bootstrap.html'). As duas têm o mesmo conteúdo. Mantive as duas indexáveis porque a F2 é parte do trabalho. Alternativa descartada: 'bootstrap.html' apontar para 'index.html'. A URL ainda não existe (T12).
+
+**Robots.** 'index, follow'. Não há 'noindex'.
+
+**scroll-margin-block-start.** Regra '[id] { scroll-margin-block-start: ... }' nas duas páginas. Nenhum elemento fixo cobre o foco hoje. É proteção para um cabeçalho fixo futuro e para links âncora. Não corrige defeito mensurável.
+
+**modulepreload.** '<link rel="modulepreload">' para os 5 módulos do 'main.js' nas duas páginas. Motivo: o navegador descobria os módulos um depois do outro. Resultado medido: não conclusivo (LCP da F1 de 0,45 s para 0,57 s, INP de 16 ms para 14 ms, dentro da variação de poucas execuções). Mantive porque não piora e remove a cascata. Remoção: apagar as 5 linhas.
+
+**Hipótese descartada.** Achei que o CLS vinha da classe 'js' entrar tarde. As gravações mostraram CLS 0. Nenhuma correção.
+
+**Medição.** Painel Desempenho (Edge 155), 4G Rápido, cache desligado. 3 execuções, só 1 registrada, sem mediana. Lighthouse em modo Navegação, Celular. Os dois perfis não são comparáveis entre si.
+
+**Limites.** Laboratório, não campo. Servidor local sem compressão. Não publicado: SEO e peso reais ficam para a T12.
+
+  **Alvos de toque (F2).** O Bootstrap entrega controles de 38 a 40 px. Passam na WCAG (24 px), mas não na meta do projeto (44 px). Ajustei pelas variáveis '--bs-*-padding-y' e por 'padding-block' em '.form-control'. A F1 já tinha 44 px.
+
 ## Pendências conhecidas
 
 - Firefox, WebKit e celular real ainda não foram testados. Entram no T11.
