@@ -892,6 +892,14 @@ p {
   }
 }
 
+/* T09, WCAG 2.2 "Foco não encoberto": quando um link âncora (#noticias, #contato...) ou o foco
+   leva a rolagem até um elemento com id, ele não encosta no topo da janela. A margem de 2,5rem
+   deixa espaço caso um cabeçalho fixo seja criado no futuro. Hoje nenhum elemento é fixo.
+   [id] é seletor de atributo (especificidade 0-1-0), não seletor de ID. */
+[id] {
+  scroll-margin-block-start: var(--espaco-4);
+}
+
 /* Sem JS: controles que dependem de JavaScript ficam escondidos.
    A classe "js" é posta no <html> pelo main.js, então html:not(.js) = JS ausente.
    Especificidade 0-3-1: vence .btn e .campo sem !important. */
