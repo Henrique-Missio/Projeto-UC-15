@@ -45,3 +45,9 @@
 - Esperado: acesso negado (403).
 - Observado: No DevTolls na aba Network, apareceu erro 403 e na página apareceu a mensagem permissão negada.
 - Evidência: docs/evidencias/t10-author-403.png
+
+## Conteúdo
+- Páginas: Notícias, Calendário, Classificação, Contato.
+- Posts: notícias fictícias, criados por WP-CLI.
+- Menu: criado no Editor de Site (Navegação), tema de blocos.
+- Conteúdo padrão (Hello world!) removido.
