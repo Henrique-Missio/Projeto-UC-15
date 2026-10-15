@@ -1,0 +1,41 @@
+/*
+ * Cabeçalho do tema: o WordPress lê este comentário para listar o tema.
+ * Theme Name: FutNotícias (filho)
+ * Template: twentytwentyfive   <- DEVE ser igual à pasta do tema pai
+ * Description: Tema filho do projeto UC15. Conteúdo fictício.
+ * Author: Henrique Missio
+ * Version: 1.0.0
+ * License: MIT
+ * Text Domain: futnoticias
+ */
+
+/* Escopo: todas as regras ficam sob .site-futnoticias (sem !important). */
+
+/* Tokens: mesmos papéis do prototipo/assets/styles.css */
+.site-futnoticias {
+    --fn-cor-acao: #1b7e32;
+    /* verde de ação: 5,1:1 sobre branco (AA) */
+    --fn-cor-papel: #ffffff;
+    /* fundo de página */
+    --fn-espaco: 1rem;
+    /* unidade de espaço base */
+}
+
+/* Links da área de conteúdo usam a cor de ação */
+.site-futnoticias a {
+    color: var(--fn-cor-acao);
+}
+
+/* Foco visível: nunca remover (WCAG 2.2) */
+.site-futnoticias a:focus-visible,
+.site-futnoticias button:focus-visible {
+    outline: 3px solid var(--fn-cor-acao);
+    outline-offset: 2px;
+}
+
+/* Movimento reduzido: remove transições */
+@media (prefers-reduced-motion: reduce) {
+    .site-futnoticias * {
+        transition: none;
+    }
+}
