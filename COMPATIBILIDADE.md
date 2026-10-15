@@ -74,7 +74,7 @@ Na versão anterior (F2 com Bootstrap 5.3.3) eu tinha testado 768, 954, 992 e 12
 
 Os números abaixo são desta versão, depois da T09. Medi o CSS sem comentários e sem linhas em branco. Não comparam com os da primeira entrega, que era só uma home de 10 minutos.
 
-- F1: 105 regras de CSS próprio, 918 linhas, 12.461 bytes. Mais 5 blocos de '@media' e '@container'.
+- F1: 105 regras de CSS próprio, 918 linhas, 30.000 kilobytes. Mais 5 blocos de '@media' e '@container'.
 - F2: 17 regras, 151 linhas, 5916 bytes. Ficam num '<style>' dentro do 'bootstrap.html'. Não há '@media' nem '@container'.
 - Bootstrap: CSS com 232.111 bytes (30.869 com gzip) e bundle JS com 80.496 bytes (23.743 com gzip).
 - JavaScript próprio: 7 arquivos em 'prototipo/js/', carregados como módulos nas duas páginas.
