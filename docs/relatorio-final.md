@@ -153,9 +153,9 @@ Modo Navegação, Celular, janela anônima. Foram 3 execuções por página; só
 - URL: https://henrique-missio.github.io/Projeto-UC-15/
   - Bootstrap (F2) com a interação jQuery: https://henrique-missio.github.io/Projeto-UC-15/bootstrap.html
 - Plataforma: GitHub Pages, publicado por workflow (`.github/workflows/pages.yml`). Só a pasta `prototipo/`. HTTPS ativo.
-- Tag: `v1.0.0`
-- Commit avaliado: bc01afa (merge do PR final). A tag `v1.0.0` aponta para o commit seguinte, que só preenche este hash.
-- Resultado da suíte: 55 testes passaram (11 specs x 5 projetos) em clone limpo, com `npm ci && npx playwright test`, em 15/10/2026.
+- Tag: `v1.0.1` (a `v1.0.0` é a primeira entrega, sem os testes da `bootstrap.html`).
+- Commit avaliado: 93966c9 (merge do PR dos testes da `bootstrap.html`). A tag `v1.0.1` aponta para o commit seguinte, que só preenche este hash e a tag.
+- Resultado da suíte: 55 testes passaram (11 specs x 5 projetos) em 16/10/2026.
 - Celular real: A21s, Android 12, Chrome 155.0.8059.79. Roteiros 1, 2 e 3 passaram (ver `TESTES.md`).
 
 ### Conferências no site publicado
@@ -197,7 +197,7 @@ Modo Navegação, Celular, janela anônima. Foram 3 execuções por página; só
 ## 9. Rollback
 
 - Desfazer um merge: `git revert -m 1 fb0b40a`, PR e merge. O workflow republica o site.
-- Voltar a um estado conhecido: `git switch -c rollback <hash-ou-tag>` e abrir PR para a `main`.
+- Voltar a um estado conhecido: `git switch -c rollback 1.0.1` e abrir PR para a `main`.
 - Site: o Pages publica a `main`. Reverter na `main` reverte o site.
-- Tag: se a `v1.0.0` estiver errada, apague com `git tag -d v1.0.0` e `git push origin :refs/tags/v1.0.0`. Crie de novo no commit certo.
+- Tag: se a `v1.0.1` estiver errada, apague com `git tag -d v1.0.1` e `git push origin :refs/tags/v1.0.1`. Crie de novo no commit certo. A `v1.0.0` (primeira entrega) fica como está.
 - Rollback testado em 16/10/2026, numa branch local descartada sem push. Reverti o merge fb0b40a (workflow do Pages): o `pages.yml` saiu e a suíte seguiu verde (25 testes).

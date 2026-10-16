@@ -51,7 +51,7 @@ Esperado: 55 testes passando (11 specs x 5 projetos). Relatório: `npx playwrigh
 
 ```bash
 git tag -a v1.0.0 -m "Entrega UC15"
-git push origin v1.0.0
+git push origin v1.0.1
 ```
 
 O protótipo é publicado no GitHub Pages a partir da pasta `prototipo/`.
