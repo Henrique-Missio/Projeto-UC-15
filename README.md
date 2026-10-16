@@ -45,7 +45,7 @@ npx playwright install
 npx playwright test
 ```
 
-Esperado: 25 testes passando (5 specs x 5 projetos). Relatório: `npx playwright show-report`.
+Esperado: 55 testes passando (11 specs x 5 projetos). Relatório: `npx playwright show-report`.
 
 ## Como gerar a entrega
 
@@ -90,5 +90,4 @@ package.json
 - O WordPress roda só localmente (WordPress Studio). Não há host externo nem HTTPS no WordPress.
 - O formulário não envia dados.
 - Um único celular real testado (A21s, Chrome).
-- Os testes automáticos cobrem só a `index.html`.
 - Repositório público. O site pode ser indexado.

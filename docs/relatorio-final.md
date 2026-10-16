@@ -155,7 +155,7 @@ Modo Navegação, Celular, janela anônima. Foram 3 execuções por página; só
 - Plataforma: GitHub Pages, publicado por workflow (`.github/workflows/pages.yml`). Só a pasta `prototipo/`. HTTPS ativo.
 - Tag: `v1.0.0`
 - Commit avaliado: bc01afa (merge do PR final). A tag `v1.0.0` aponta para o commit seguinte, que só preenche este hash.
-- Resultado da suíte: 25 testes passaram (5 specs x 5 projetos) em clone limpo, com `npm ci && npx playwright test`, em 15/10/2026.
+- Resultado da suíte: 55 testes passaram (11 specs x 5 projetos) em clone limpo, com `npm ci && npx playwright test`, em 15/10/2026.
 - Celular real: A21s, Android 12, Chrome 155.0.8059.79. Roteiros 1, 2 e 3 passaram (ver `TESTES.md`).
 
 ### Conferências no site publicado
@@ -171,7 +171,6 @@ Modo Navegação, Celular, janela anônima. Foram 3 execuções por página; só
 
 - WordPress só local (Studio). Não existe "produção" real nem HTTPS do WordPress. O protótipo estático é o que tem URL pública.
 - Um único celular real (A21s, Chrome). Sem iPhone nem Safari real.
-- Testes automáticos cobrem só a `index.html`. A `bootstrap.html` não tem.
 - Os testes dependem dos textos atuais da interface.
 - Lighthouse da F1 foi rodado em `index.html#noticia-n3`. Não foi repetido sem o trecho.
 - Peso no GitHub Pages (com compressão), 4G Rápido, cache desligado: F1 21,3 kB, F2 109 kB. O LCP e o INP das seções 2.2 e 2.5 vêm do servidor local e não foram repetidos no Pages.
