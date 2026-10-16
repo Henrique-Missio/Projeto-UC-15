@@ -28,22 +28,24 @@ Torcedores que acompanham a temporada pelo celular.
 ## Como abrir o protótipo
 
 ```bash
-git clone <https://github.com/Henrique-Missio/Projeto-UC-15.git>
-cd <Projeto-UC-15>/prototipo
+git clone https://github.com/Henrique-Missio/Projeto-UC-15.git
+cd Projeto-UC-15/prototipo
 python -m http.server 8000
 ```
 
 Abra `http://localhost:8000` (F1) e `http://localhost:8000/bootstrap.html` (F2). No Windows, use `python` no lugar de `python3`. No VS Code, a extensão Live Server também serve.
 
+Site publicado: https://henrique-missio.github.io/Projeto-UC-15/ (F1) e https://henrique-missio.github.io/Projeto-UC-15/bootstrap.html (F2).
+
 ## Como testar
 
 ```bash
 npm ci
+npx playwright install
 npx playwright test
 ```
-```bash
-npm ci && npx playwright test
-```
+
+Esperado: 25 testes passando (5 specs x 5 projetos). Relatório: `npx playwright show-report`.
 
 ## Como gerar a entrega
 
@@ -62,7 +64,9 @@ docs/evidencias/        prints, traces e relatórios
 docs/relatorio-final.md
 prototipo/              index.html (F1), bootstrap.html (F2), assets/, js/
 wordpress/tema-filho/   tema filho do WordPress
-tests/                  testes Playwright
+tests/e2e/   specs Playwright
+.github/workflows/pages.yml
+package.json
 ```
 
 ## Documentação
@@ -71,15 +75,20 @@ tests/                  testes Playwright
 - `COMPATIBILIDADE.md`: classes, larguras testadas, peso e diferenças entre F1 e F2.
 - `TESTES.md`: plano e roteiros de teste.
 - `CMS.md`: ambiente, tema, backup e rollback do WordPress.
+- `docs/relatorio-final.md`: auditorias, entrega, demo e rollback.
 
 ## Licenças e autoria
 
 - Código: MIT (arquivo `LICENSE`).
 - Textos e ilustrações próprios: CC BY 4.0.
 - Bootstrap 5.3.8: MIT, em `prototipo/assets/vendor/bootstrap-5.3.8/LICENSE`.
+- jQuery 4.0.0: MIT, em `prototipo/assets/vendor/jquery-4.0.0/LICENSE.txt`.
 - Todo o conteúdo é fictício. Nomes de times e resultados são inventados.
 
 ## Limitações conhecidas
 
 - O WordPress roda só localmente (WordPress Studio). Não há host externo nem HTTPS no WordPress.
 - O formulário não envia dados.
+- Um único celular real testado (A21s, Chrome).
+- Os testes automáticos cobrem só a `index.html`.
+- Repositório público. O site pode ser indexado.
