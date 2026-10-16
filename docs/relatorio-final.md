@@ -154,7 +154,7 @@ Modo Navegação, Celular, janela anônima. Foram 3 execuções por página; só
   - Bootstrap (F2) com a interação jQuery: https://henrique-missio.github.io/Projeto-UC-15/bootstrap.html
 - Plataforma: GitHub Pages, publicado por workflow (`.github/workflows/pages.yml`). Só a pasta `prototipo/`. HTTPS ativo.
 - Tag: `v1.0.1` (a `v1.0.0` é a primeira entrega, sem os testes da `bootstrap.html`).
-- Commit avaliado: 93966c9 (merge do PR dos testes da `bootstrap.html`). A tag `v1.0.1` aponta para o commit seguinte, que só preenche este hash e a tag.
+- Commit avaliado: 56ae77d (merge do PR dos testes da `bootstrap.html`). A tag `v1.0.1` aponta para o último commit da `main` na entrega. Os commits depois do avaliado mudam só documentos, nunca código nem testes.
 - Resultado da suíte: 55 testes passaram (11 specs x 5 projetos) em 16/10/2026.
 - Celular real: A21s, Android 12, Chrome 155.0.8059.79. Roteiros 1, 2 e 3 passaram (ver `TESTES.md`).
 
