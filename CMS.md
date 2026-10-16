@@ -1,6 +1,7 @@
 # CMS
 
 ## Ambiente local
+
 - Ferramenta: WordPress Studio 1.24.0, Windows 11.
 - WordPress 7.1.3. PHP 8.4.26. WP-CLI 2.12.0.
 - Banco: SQLite local (Studio). Produção usaria MariaDB/MySQL.
@@ -9,6 +10,7 @@
 - Tema filho: wordpress/tema-filho/.
 
 ## Tema pai e tema filho
+
 - Pai: `twentytwentyfive` 1.5, tema de blocos. Decisão em DECISOES.md (D-14).
 - Filho: `wordpress/tema-filho/`. O `Template` aponta para o pai.
 - `style.css`: cabeçalho do tema e CSS com escopo `.site-futnoticias`. Sem `!important`.
@@ -17,10 +19,12 @@
 - Os arquivos do pai não foram editados.
 
 ## Plug-ins
+
 - Nenhum instalado. O core atendeu todos os requisitos.
 - Se algum entrar: ficha com requisito, procedência, dados, impacto e rollback.
 
 ## Usuários de teste
+
 - henrique-admin: Administrator (eu). Gerencia tema, usuários e configurações.
 - editor-teste: Editor. Publica e edita posts de qualquer autor.
 - autor-teste: Author. Publica só os próprios posts.
@@ -30,6 +34,7 @@
 ## Backup e restauração
 
 ### Plano de backup
+
 - Banco: incluído no export do Studio (SQLite local).
 - Uploads: `wp-content/uploads`, incluídos no export.
 - Tema: versionado no Git (`wordpress/tema-filho/`).
@@ -38,9 +43,10 @@
 - Frequência: antes de cada mudança grande.
 - Arquivos gerados:
   - Site completo: `.zip`, 13,4 MB.
-  - Só o banco: <nome e tamanho, se você exportou>.
+  - Só o banco: studio-backup-futnoticias.sql 1.2 MB.
 
 ### Teste de restauração
+
 - Data: 15/10/2026.
 - Origem: site `futnoticias`.
 - Destino: site `futnoticias-staging` (2º site Studio).
@@ -56,6 +62,7 @@
 - Limite: restauração testada só entre dois sites locais, na mesma máquina.
 
 ## Staging
+
 - Staging: 2º site Studio, `futnoticias-staging`, porta 8882.
 - Origem: `futnoticias`, porta 8881.
 - Migração de URL: WP-CLI `search-replace`, ciente de dados serializados. Nunca `REPLACE` em SQL.
@@ -73,15 +80,55 @@
 - Evidência: `docs/evidencias/t10-staging-search-replace-dry-run.png`, `t10-staging-search-replace.png`, `t10-staging-home2.png`.
 - Limite: staging local, sem HTTPS. A produção real não existe (débito declarado).
 
+## Smoke test
+
+- Ambiente: `futnoticias-staging` (porta 8882).
+- Data: 15/10/2026.
+- Itens verificados:
+  - Home abre sem erro: ok.
+  - Menu com 4 links na ordem Notícias, Calendário, Classificação, Contato: ok.
+  - Cada link do menu abre a página correta: ok.
+  - 3 posts de notícia visíveis: ok.
+  - Login de editor-teste e autor-teste: ok.
+  - Console do navegador sem erro: ok.
+  - Tema ativo: `tema-filho`.
+  - Login de editor-teste: ok. Vê Posts e Páginas. Sem acesso a Aparência e Configurações.
+  - Login de autor-teste: ok. Vê só Posts. Sem acesso a Páginas e Configurações.
+- Resultado: Tudo funcionando.
+- Evidência: `docs/evidencias/t10-smoke-home.png` e `t10-smoke-console.png`.
+
+## Rollback
+
+- Rollback de tema:
+  - Estado inicial: `tema-filho` ativo.
+  - Ação: `studio wp theme activate twentytwentyfive`.
+  - Observado: fontes em texto preto, com diferenças de espaçamento.
+  - Volta: `studio wp theme activate tema-filho`.
+  - Verificação: home com o visual do filho de novo.
+- Rollback de dados: restaurar o backup do staging feito antes do `search-replace`.
+  - Backup: `.zip` do staging, guardado fora do repositório.
+  - Como: no Studio, importar esse `.zip` em um site novo.
+  - Status: documentado, não executado.
+- Rollback de código: `git revert` do commit ou voltar à tag anterior.
+- Evidência: `docs/evidencias/t10-rollback-tema-pai.png`.
+- Rollback de código: `git revert` do commit ou voltar à tag anterior. Status: documentado, não executado.
+- Limite: só o rollback de tema foi executado, e só no staging local.
+
 ## Diferenças para produção
+
 - SQLite × MariaDB/MySQL: alguns plug-ins e SQL manual podem falhar.
 - Sem HTTPS, sem CDN, sem cache de servidor.
 - Sem e-mail real.
 
 ## Produção
-- Não existe. Débito declarado.
+- Não existe. Débito declarado (DECISOES.md, risco 1).
+- Motivo: o projeto só roda local (WordPress Studio). Não há host externo.
+- Se existisse, a ordem seria: backup, publicar em staging, migrar URL com `search-replace`, smoke test, monitorar logs e disponibilidade, manter o rollback pronto.
+- Equivalente testado aqui: staging local com smoke test e rollback de tema.
+- O protótipo estático está publicado no GitHub Pages, com HTTPS (T12).
 
 ## Teste de permissão: Author
+
 - Usuário: autor-teste (Author).
 - URL: http://localhost:8881/wp-admin/options-general.php
 - Esperado: acesso negado (403).
@@ -89,12 +136,14 @@
 - Evidência: docs/evidencias/t10-author-403.png
 
 ## Conteúdo
+
 - Páginas: Notícias, Calendário, Classificação, Contato.
 - Posts: notícias fictícias, criados por WP-CLI.
 - Menu: criado no Editor de Site (Navegação), tema de blocos.
 - Conteúdo padrão (Hello world!) removido.
 
 ## Caso extremo: Template errado
+
 - Sintoma: `studio wp theme activate tema-filho` falhou com "The parent theme is missing".
 - Mensagem: o WordPress pediu o tema pai com o nome `twentytwentyfive` seguido de um comentário.
 - Causa: o `style.css` tinha um comentário na mesma linha do `Template`. O WordPress leu a linha inteira como nome do pai.
@@ -103,6 +152,7 @@
 - Lição: o valor de `Template` tem que ser exatamente o nome da pasta do pai.
 
 ## Caso extremo: pai ausente
+
 - Site de teste: `futnoticias-staging` (porta 8882). O site principal não foi tocado.
 - Teste: renomeei `wp-content/themes/twentytwentyfive` para `twentytwentyfive-off`.
 - Observado em `theme list`: o `tema-filho` deixou de aparecer. Nenhum tema ficou `active`.
