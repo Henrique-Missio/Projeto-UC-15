@@ -228,6 +228,7 @@ Os requisitos pedem suíte automática com Playwright e servidor estático do `p
 - Menu e 320px usam `test.use({ viewport })`, porque o botão do menu só aparece em tela estreita.
 - Trace: `on-first-retry`, com 1 retry. Relatório e traces ficam no `.gitignore`.
 - Mutação: comentei a linha do `aria-expanded` em `menu.js`. Os 5 testes de menu falharam. Revertido, 25 verdes.
+- Na bootstrap.html uso reducedMotion: 'reduce' (o Bootstrap ignora cliques durante a animação).
 
 ### Alternativas descartadas
 - `file://`: quebra os módulos JS.
@@ -236,7 +237,7 @@ Os requisitos pedem suíte automática com Playwright e servidor estático do `p
 
 ### Consequências
 - Qualquer pessoa roda `npm ci`, `npx playwright install` e `npx playwright test`.
-- A cobertura é pequena: 5 fluxos, só na `index.html`.
+- A cobertura é pequena: 5 fluxos, index.html (5 fluxos) e bootstrap.html (6 fluxos).
 
 ### Limites
 - WebKit não é o Safari real.

@@ -98,7 +98,7 @@ npx playwright show-report
 ```
 
 ### Resultado
-- 5 specs x 5 projetos = 25 testes.
+- 55 testes (11 specs x 5 projetos)
 - 15/10/2026: 25 passaram em 10,7 s.
 - Evidência: `docs/evidencias/t11-suite-verde.png`.
 
@@ -130,5 +130,5 @@ npx playwright show-report
 - WebKit não é o Safari real.
 - Emulação de celular não é aparelho real.
 - Perfil emulado não testa toque real, teclado virtual nem desempenho.
-- Só a `index.html` tem testes automáticos. A `bootstrap.html` não tem.
 - Leitor de tela não é automatizado. Fica no roteiro manual.
+- Os testes da bootstrap.html rodam com movimento reduzido, porque o Bootstrap ignora cliques durante a animação. A animação normal não é testada.
