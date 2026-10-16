@@ -107,6 +107,7 @@ Aqui eu registro o porquê. O que foi feito, com classes, larguras e medidas, es
   - `git log --all --name-only --pretty=format: | sort -u | grep -i -E "\.env|\.sql|\.zip|wp-config|\.pem"`
 - Resultado em 12/10/2026: nenhum segredo. O único achado do `git grep` foi `bootstrap.bundle.min.js.map` (nomes de código do Bootstrap). O segundo comando saiu vazio.
 - Os `.map` do Bootstrap ficam no repositório. São inofensivos e servem para depurar no DevTools.
+- Na T11 e na T12 usei também: `git log --all --oneline -G"(senha|token|api[_-]?key|secret|password)[ ]*[=:]" -- . ":(exclude)package-lock.json"`. O lockfile gera falso positivo (`keyv` e similares). Resultado: vazio.
 
 ## D-13: Imagem principal em SVG com srcset (T05)
 
@@ -180,7 +181,7 @@ Aqui eu registro o porquê. O que foi feito, com classes, larguras e medidas, es
 - 'MutationObserver': o 'favoritos.js' restaura os favoritos do 'localStorage' no carregamento, sem clique e depois da contagem inicial do jQuery. Na primeira versão o contador ficava em 0 ao recarregar. O observador recalcula o total quando o 'aria-pressed' muda ou um card entra na lista. 'desmontar()' o desliga.
 - Item dinâmico: no Console, criei um card novo com 'button[data-favorito]' dentro de '#lista-noticias' e cliquei nele. O total subiu sem eu religar nenhum handler. A delegação cobre itens criados depois do listener. Evidência: 'docs/evidencias/t08-item-dinamico.png'.
 
-**Carga fria.** Medi 'bootstrap.html' com e sem as duas linhas de script do jQuery, cache desligado, Fast 4G, mobile, 3 execuções, mediana. Medir 'index.html' contra 'bootstrap.html' não isola o jQuery: o Bootstrap também pesa. Resultado: [preencher: KB e requisições sem jQuery / com jQuery].
+**Carga fria.** Medi 'bootstrap.html' com e sem as duas linhas de script do jQuery, cache desligado, Fast 4G, mobile, 3 execuções, mediana. Medir 'index.html' contra 'bootstrap.html' não isola o jQuery: o Bootstrap também pesa. Resultado: sem jQuery 377 kB e 13 requisições; com jQuery 461 kB e 15 requisições.
 
 **Plano de remoção.** Apagar as duas linhas de script em 'bootstrap.html', a pasta 'assets/vendor/jquery-4.0.0/' e 'js/jquery-favoritos.js'. O parágrafo do contador com 'data-total-favoritos' pode sair junto. Nada mais depende dele.
 
@@ -190,7 +191,7 @@ Aqui eu registro o porquê. O que foi feito, com classes, larguras e medidas, es
 
 ## D-17: Acessibilidade, SEO e desempenho (T09)
 
-**Canonical.** Cada página aponta para si mesma ('index.html' para 'https://henrique-missio.github.io/Projeto-UC-15/', 'bootstrap.html' para '.../bootstrap.html'). As duas têm o mesmo conteúdo. Mantive as duas indexáveis porque a F2 é parte do trabalho. Alternativa descartada: 'bootstrap.html' apontar para 'index.html'. A URL ainda não existe (T12).
+**Canonical.** Cada página aponta para si mesma ('index.html' para 'https://henrique-missio.github.io/Projeto-UC-15/', 'bootstrap.html' para '.../bootstrap.html'). As duas têm o mesmo conteúdo. Mantive as duas indexáveis porque a F2 é parte do trabalho. Alternativa descartada: 'bootstrap.html' apontar para 'index.html'. 
 
 **Robots.** 'index, follow'. Não há 'noindex'.
 
@@ -202,9 +203,9 @@ Aqui eu registro o porquê. O que foi feito, com classes, larguras e medidas, es
 
 **Medição.** Painel Desempenho (Edge 155), 4G Rápido, cache desligado. 3 execuções, só 1 registrada, sem mediana. Lighthouse em modo Navegação, Celular. Os dois perfis não são comparáveis entre si.
 
-**Limites.** Laboratório, não campo. Servidor local sem compressão. Não publicado: SEO e peso reais ficam para a T12.
+**Limites.** Laboratório, não campo. Servidor local sem compressão. Na T12 conferi canonical, title e robots na URL publicada. Peso no GitHub Pages (4G Rápido, cache desligado): F1 21,3 kB e F2 109 kB.
 
-  **Alvos de toque (F2).** O Bootstrap entrega controles de 38 a 40 px. Passam na WCAG (24 px), mas não na meta do projeto (44 px). Ajustei pelas variáveis '--bs-*-padding-y' e por 'padding-block' em '.form-control'. A F1 já tinha 44 px.
+**Alvos de toque (F2).** O Bootstrap entrega controles de 38 a 40 px. Passam na WCAG (24 px), mas não na meta do projeto (44 px). Ajustei pelas variáveis '--bs-*-padding-y' e por 'padding-block' em '.form-control'. A F1 já tinha 44 px.
 
 ## D-18: Tema pai da T10
 - Decisão: tema pai `twentytwentyfive` 1.5, não o Twenty Twenty-Six.
@@ -213,7 +214,7 @@ Aqui eu registro o porquê. O que foi feito, com classes, larguras e medidas, es
 - Efeito: `Template: twentytwentyfive` no `style.css` do filho.
 - Risco: pai e filho podem divergir em atualizações. Mitigação: atualizações automáticas do tema desligadas (`auto_update: off`).
 
-## D-17: Automação de testes (T11)
+## D-19: Automação de testes (T11)
 
 ### Contexto
 Os requisitos pedem suíte automática com Playwright e servidor estático do `prototipo/`. Os módulos JS (`type="module"`) não abrem por `file://`. Precisa de HTTP.
@@ -234,7 +235,7 @@ Os requisitos pedem suíte automática com Playwright e servidor estático do `p
 - Só Chromium: não pegaria diferenças de motor.
 
 ### Consequências
-- Qualquer pessoa roda `npm ci && npx playwright test`.
+- Qualquer pessoa roda `npm ci`, `npx playwright install` e `npx playwright test`.
 - A cobertura é pequena: 5 fluxos, só na `index.html`.
 
 ### Limites
@@ -242,10 +243,18 @@ Os requisitos pedem suíte automática com Playwright e servidor estático do `p
 - Emulação não é aparelho: sem toque real, teclado virtual ou desempenho.
 - Os testes assumem textos atuais da interface ("1 resultado", "Nenhuma notícia encontrada"). Mudar o texto quebra o teste.
 
-## Pendências conhecidas
+## D-20: Publicação e riscos declarados (T12)
 
-- Firefox, WebKit e celular real ainda não foram testados. Entram no T11.
-- Em 160px de largura a F1 tem rolagem horizontal. O critério é 320px.
-- Na F2, sem JavaScript, o menu e o modal não funcionam: dependem do bundle do Bootstrap.
-- Os números de peso e de regras do 'COMPATIBILIDADE.md' foram medidos antes da T07. Peso da F2 refeito depois do jQuery (T08).
-- Os prints de T00 a T07 estão em 'docs/evidencias/'. Faltam os de T08 em diante.
+**Risco 1: "URL publicada" com WordPress só local.** O WordPress roda só no Studio, sem host nem HTTPS. A URL pública é o protótipo estático no GitHub Pages: https://henrique-missio.github.io/Projeto-UC-15/. O WordPress fica como "staging local". Débito conhecido.
+
+**Como publica.** Workflow `.github/workflows/pages.yml`: a cada push na `main`, publica só `prototipo/`. O Pages não aceita subpasta direto. WordPress, testes e documentos ficam de fora.
+
+**Risco 2: celular real.** Usei o A21s, Android 12, Chrome 155.0.8059.79. Acesso pela rede local (`http-server` com o IP do PC). Sem iPhone nem Safari real.
+
+**Risco 3: prazo.** Cortei: testes automáticos da `bootstrap.html` e a repetição do Lighthouse da F1 sem `#noticia-n3`. Mantive evidência, T07, mutação e tag.
+
+**Repositório público.** O Pages gratuito exige. O conteúdo é fictício, sem segredo (D-12). Os commits antigos (T00 a T11) mostram meu e-mail pessoal. Reescrever o histórico exigiria `push --force` e não limparia as páginas dos PRs já mergeados. Aceitei. Os novos commits usam o e-mail `noreply` do GitHub. Depois da nota, posso despublicar em Settings > Pages.
+
+**Aviso do workflow.** O Actions avisa que `checkout@v4`, `configure-pages@v5`, `upload-pages-artifact@v3` e `deploy-pages@v4` usam Node 20. O deploy funciona. Atualizar as versões fica como débito.
+
+**Permissão do push.** O push do `pages.yml` foi recusado: o token do Git não tinha o escopo `workflow`. Refiz o login pelo Gerenciador de Credenciais do Windows.
