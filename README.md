@@ -41,6 +41,9 @@ Abra `http://localhost:8000` (F1) e `http://localhost:8000/bootstrap.html` (F2).
 npm ci
 npx playwright test
 ```
+```bash
+npm ci && npx playwright test
+```
 
 ## Como gerar a entrega
 

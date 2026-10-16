@@ -213,6 +213,35 @@ Aqui eu registro o porquê. O que foi feito, com classes, larguras e medidas, es
 - Efeito: `Template: twentytwentyfive` no `style.css` do filho.
 - Risco: pai e filho podem divergir em atualizações. Mitigação: atualizações automáticas do tema desligadas (`auto_update: off`).
 
+## D-17: Automação de testes (T11)
+
+### Contexto
+Os requisitos pedem suíte automática com Playwright e servidor estático do `prototipo/`. Os módulos JS (`type="module"`) não abrem por `file://`. Precisa de HTTP.
+
+### Decisão
+- Servidor: `http-server` na porta 4173, com `-c-1` (cache desligado, o teste lê o arquivo atual). Sobe sozinho pelo `webServer` do `playwright.config.ts`.
+- Projetos: `chromium`, `firefox`, `webkit`, `Pixel 7` e `iPhone 14`. Motores diferentes e dois perfis móveis emulados.
+- Seletores: `getByRole` e `getByLabel`. Ids só para regiões de status e mensagens de erro escondidas.
+- Isolamento: `beforeEach` abre a home do zero. Nenhum teste depende de outro.
+- Sem `waitForTimeout`. Só `expect` com espera automática.
+- Menu e 320px usam `test.use({ viewport })`, porque o botão do menu só aparece em tela estreita.
+- Trace: `on-first-retry`, com 1 retry. Relatório e traces ficam no `.gitignore`.
+- Mutação: comentei a linha do `aria-expanded` em `menu.js`. Os 5 testes de menu falharam. Revertido, 25 verdes.
+
+### Alternativas descartadas
+- `file://`: quebra os módulos JS.
+- `python -m http.server`: exigiria outra ferramenta no `package.json` e quebraria o `npm ci` limpo.
+- Só Chromium: não pegaria diferenças de motor.
+
+### Consequências
+- Qualquer pessoa roda `npm ci && npx playwright test`.
+- A cobertura é pequena: 5 fluxos, só na `index.html`.
+
+### Limites
+- WebKit não é o Safari real.
+- Emulação não é aparelho: sem toque real, teclado virtual ou desempenho.
+- Os testes assumem textos atuais da interface ("1 resultado", "Nenhuma notícia encontrada"). Mudar o texto quebra o teste.
+
 ## Pendências conhecidas
 
 - Firefox, WebKit e celular real ainda não foram testados. Entram no T11.

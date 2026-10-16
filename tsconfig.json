@@ -1,0 +1,15 @@
+{
+    // Opções mínimas só para o editor entender os arquivos .ts.
+    "compilerOptions": {
+      // Código moderno (async/await, etc.).
+      "target": "ES2022",
+      // Resolução de módulos no estilo Node.
+      "module": "commonjs",
+      // Carrega os tipos do Node (process, etc.).
+      "types": ["node"],
+      // Ignora erros em arquivos de bibliotecas.
+      "skipLibCheck": true
+    },
+    // Só estes arquivos entram na checagem.
+    "include": ["playwright.config.ts", "tests/**/*.ts"]
+  }
