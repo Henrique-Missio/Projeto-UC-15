@@ -1,0 +1,36 @@
+# .github/workflows/pages.yml
+# Publica a pasta prototipo/ no GitHub Pages a cada push na main.
+name: Publicar no GitHub Pages
+
+on:
+  # Roda quando a main recebe push (merge de PR).
+  push:
+    branches: [main]
+  # Permite rodar na mão pela aba Actions.
+  workflow_dispatch:
+
+# Permissões mínimas para publicar no Pages.
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+jobs:
+  publicar:
+    runs-on: ubuntu-latest
+    # Ambiente "github-pages" mostra a URL final no resultado.
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
+    steps:
+      # Baixa o código do repositório.
+      - uses: actions/checkout@v4
+      # Prepara o Pages.
+      - uses: actions/configure-pages@v5
+      # Empacota SÓ a pasta prototipo/ (WordPress e testes ficam de fora).
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: prototipo
+      # Publica o pacote e devolve a URL.
+      - id: deploy
+        uses: actions/deploy-pages@v4
