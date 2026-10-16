@@ -1,0 +1,18 @@
+{
+    "$schema": "https://schemas.wp.org/trunk/theme.json",
+    "version": 3,
+    "settings": {
+      "color": {
+        "palette": [
+          { "slug": "acao",  "name": "Ação",  "color": "#1b7e32" },
+          { "slug": "papel", "name": "Papel", "color": "#ffffff" }
+        ]
+      },
+      "layout": { "contentSize": "65ch", "wideSize": "72rem" }
+    },
+    "styles": {
+      "elements": {
+        "link": { "color": { "text": "var(--wp--preset--color--acao)" } }
+      }
+    }
+  }

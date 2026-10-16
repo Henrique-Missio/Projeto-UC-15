@@ -206,6 +206,13 @@ Aqui eu registro o porquê. O que foi feito, com classes, larguras e medidas, es
 
   **Alvos de toque (F2).** O Bootstrap entrega controles de 38 a 40 px. Passam na WCAG (24 px), mas não na meta do projeto (44 px). Ajustei pelas variáveis '--bs-*-padding-y' e por 'padding-block' em '.form-control'. A F1 já tinha 44 px.
 
+## D-18: Tema pai da T10
+- Decisão: tema pai `twentytwentyfive` 1.5, não o Twenty Twenty-Six.
+- Motivo: o Studio instalou o `twentytwentyfive` no site novo. Os temas instalados eram `twentytwentyfive`, `twentytwentyfour` e `twentytwentythree`. O Twenty Twenty-Six não estava presente.
+- Alternativa descartada: instalar o Twenty Twenty-Six. Custa um passo extra e não muda o requisito da T10 (pai de blocos + filho).
+- Efeito: `Template: twentytwentyfive` no `style.css` do filho.
+- Risco: pai e filho podem divergir em atualizações. Mitigação: atualizações automáticas do tema desligadas (`auto_update: off`).
+
 ## Pendências conhecidas
 
 - Firefox, WebKit e celular real ainda não foram testados. Entram no T11.
