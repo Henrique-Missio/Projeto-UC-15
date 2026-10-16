@@ -154,7 +154,7 @@ Modo Navegação, Celular, janela anônima. Foram 3 execuções por página; só
   - Bootstrap (F2) com a interação jQuery: https://henrique-missio.github.io/Projeto-UC-15/bootstrap.html
 - Plataforma: GitHub Pages, publicado por workflow (`.github/workflows/pages.yml`). Só a pasta `prototipo/`. HTTPS ativo.
 - Tag: `v1.0.0`
-- Commit avaliado: [hash do merge do PR final]. A tag v1.0.0 aponta para o commit seguinte, que só preenche este hash.
+- Commit avaliado: bc01afa (merge do PR final). A tag `v1.0.0` aponta para o commit seguinte, que só preenche este hash.
 - Resultado da suíte: 25 testes passaram (5 specs x 5 projetos) em clone limpo, com `npm ci && npx playwright test`, em 15/10/2026.
 - Celular real: A21s, Android 12, Chrome 155.0.8059.79. Roteiros 1, 2 e 3 passaram (ver `TESTES.md`).
 
