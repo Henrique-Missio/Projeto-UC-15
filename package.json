@@ -1,0 +1,30 @@
+{
+  "name": "projeto-uc15",
+  "version": "1.0.0",
+  "description": "Portal mobile-first para acompanhar uma temporada de futebol. Projeto da UC15 (HTML Mobile first).",
+  "main": "index.js",
+  "directories": {
+    "doc": "docs",
+    "test": "tests"
+  },
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://%3C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%3E@github.com/Henrique-Missio/Projeto-UC-15.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Henrique-Missio/Projeto-UC-15/issues"
+  },
+  "homepage": "https://github.com/Henrique-Missio/Projeto-UC-15#readme",
+  "devDependencies": {
+    "@playwright/test": "^1.64.1",
+    "@types/node": "^26.6.5",
+    "http-server": "^14.1.1"
+  }
+}
