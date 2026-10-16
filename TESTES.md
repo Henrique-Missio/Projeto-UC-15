@@ -18,7 +18,7 @@
 
 - Motores: Chromium, Firefox, WebKit.
 - Perfis móveis emulados: Pixel 7 e iPhone 14.
-- Celular real: [aparelho, SO e navegador].
+- Celular real: A21s, Android 12, Chrome 155.0.8059.79.
 - Servidor: `http-server` servindo `prototipo/`, porta 4173.
 
 ## Matriz de responsividade
@@ -42,8 +42,8 @@
 - Zoom 200% (janela de 1280px, equivale a 640px). Método: zoom do navegador, DevTools fechado. Observado: sem rolagem horizontal, nada cortado, menu e formulário usáveis. Print: `t05-zoom-200.png`.
 - Fonte ampliada ("Muito grande"): Observado: o texto cresce junto, nada é cortado e não há rolagem horizontal da página.
 - Paisagem (844 × 390): Observado: nada some, o menu continua usável e o formulário funciona. Print: `t05-paisagem.png`.
-- Teclado virtual (celular real): Pendente. Será testado no celular real no T11.
-- Aparelho: Pendente. Modelo, sistema e navegador entram no T11.
+- Teclado virtual (celular real): Funcionando
+- Aparelho: A21s, Android 12, Chrome 155.0.8059.79.
 
 ### Limites desta matriz
 - O modo responsivo do DevTools não reproduz o teclado virtual nem a rolagem real do celular. Esses pontos foram conferidos no A21s.
