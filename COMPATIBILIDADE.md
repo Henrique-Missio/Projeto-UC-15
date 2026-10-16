@@ -62,13 +62,13 @@ Testei as duas páginas nestas larguras: 320, 375, 575, 576, 767, 768, 769, 954,
 - Em 160px de largura (zoom de 400% numa janela de 640px) a F1 ainda ganha 30px de rolagem horizontal.
 - Zoom de 200% e fonte ampliada: testados em navegador de verdade no T05 (ver 'TESTES.md', matriz de responsividade).
 
-Ainda não testei:
+## O que ainda não testei
 
-- Firefox e WebKit.
-- Celular real e teclado virtual.
-- Jornada só por teclado na F1, inteira, com os olhos.
-
-Na versão anterior (F2 com Bootstrap 5.3.3) eu tinha testado 768, 954, 992 e 1200px.
+- Safari real. O WebKit do Playwright não é o Safari.
+- Firefox e WebKit só foram exercitados pelos testes automáticos (fluxos). Não fiz inspeção visual neles.
+- Um único celular real: A21s, Chrome. Sem iPhone.
+- Leitor de tela. Testei só teclado físico, no Edge.
+- Bootstrap com animação normal nos testes automáticos. Eles rodam com movimento reduzido.
 
 ## CSS próprio e peso
 
